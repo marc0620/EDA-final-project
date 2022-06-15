@@ -3,6 +3,8 @@
   "files.associations": {
     "*.html": "html",
     "**/templates/**/*.html": "django-html",
-    "vector": "cpp"
+    "vector": "cpp",
+    "iosfwd": "cpp",
+    "iostream": "cpp"
   }
 }
