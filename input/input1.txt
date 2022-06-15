@@ -55,7 +55,7 @@ Pin C7/P2
 Net N3 2
 Pin C2/P3
 Pin C8/P1
-Net N4 3
+Net N4 3 
 Pin C3/P3
 Pin C6/P2
 Pin C7/P1

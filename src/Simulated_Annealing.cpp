@@ -26,7 +26,14 @@ class Terminal {
    public:
     static int width, height, spacing;
     int posX, posY;
+    static void setWidth(int i);
+    static void setHeight(int i);
+    static void setSpacing(int i);
 };
+int Terminal::width;
+int Terminal::height;
+int Terminal::spacing;
+
 class Inst {
    public:
     int posX, posY, sizeY, sizeX, pinNum, type;
@@ -92,24 +99,25 @@ void LibCell::settech(int i) {
 void LibCell::setname(int i) {
     name = i;
 }
-LibCell::LibCell(int name, int tech, int sizeX, int sizeY, int pinNum) {
-    name = name;
-    tech = tech;
-    pinNum = pinNum;
-    sizeX = sizeX;
-    sizeY = sizeY;
+LibCell::LibCell(int n, int t, int X, int Y, int pn) {
+    name = n;
+    tech = t;
+    pinNum = pn;
+    sizeX = X;
+    sizeY = Y;
 }
 class Die {
    public:
     int lowerLeftX, lowerLeftY, higherRightX, higherRightY, gridWidth, gridHeight, tech, maxUtil, rowNum, colNum;
     vector<vector<int>> grid;
+    Die(){};
     Die(int lowerLeftX, int lowerLeftY, int higherRightX, int higherRightY);
 };
-Die::Die(int lowerLeftX, int lowerLeftY, int higherRightX, int higherRightY) {
-    lowerLeftX = lowerLeftX;
-    lowerLeftY = lowerLeftY;
-    higherRightX = higherRightX;
-    higherRightY = higherRightY;
+Die::Die(int llX, int llY, int hrX, int hrY) {
+    lowerLeftX = llX;
+    lowerLeftY = llY;
+    higherRightX = hrX;
+    higherRightY = hrY;
 }
 // int HPWL() {
 // }
@@ -144,12 +152,10 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < techDieNum[i]; j++) {
             int n, sizeX, sizeY, pinNum;
             fin >> JUNK >> junk >> junk >> n;
-            cout << "read:" << JUNK << junk << " " << n << '\n';
             if (n != j + 1) {
                 cout << "error: input format fault" << '\n';
             }
             fin >> sizeX >> sizeY >> pinNum;
-            cout << sizeX << " " << sizeY << " " << pinNum << "\n";
             Lib[i][j].setname(j);
             Lib[i][j].setsizeX(sizeX);
             Lib[i][j].setsizeY(sizeY);
@@ -160,7 +166,6 @@ int main(int argc, char* argv[]) {
             for (int k = 0; k < pinNum; k++) {
                 int posX, posY;
                 fin >> JUNK >> JUNK >> posX >> posY;
-                cout << JUNK << " " << posX << " " << posY << '\n';
                 (*pins)[k].name = k;
                 (*pins)[k].posX = posX;
                 (*pins)[k].posY = posY;
@@ -188,26 +193,35 @@ int main(int argc, char* argv[]) {
     dies[0] = new Die(lowerLeftX, lowerLeftY, higherRightX, higherRightY);
     dies[1] = new Die(lowerLeftX, lowerLeftY, higherRightX, higherRightY);
     fin >> JUNK >> dies[0]->maxUtil >> JUNK >> dies[1]->maxUtil;
-    fin >> JUNK >> JUNK >> JUNK >> dies[0]->gridHeight >> dies[0]->rowNum;
-    fin >> JUNK >> JUNK >> JUNK >> dies[1]->gridHeight >> dies[1]->rowNum;
+    fin >> JUNK >> JUNK >> JUNK >> JUNK >> dies[0]->gridHeight >> dies[0]->rowNum;
+    fin >> JUNK >> JUNK >> JUNK >> JUNK >> dies[1]->gridHeight >> dies[1]->rowNum;
     fin >> JUNK >> junk >> junk;
-    dies[0]->tech = (int)junk - 65;
+    dies[0]
+        ->tech = (int)junk - 65;
     fin >> JUNK >> junk >> junk;
     dies[1]->tech = (int)junk - 65;
+    // for (int i = 0; i < 2; i++) {
+    //     cout << "die" << i << ": " << '\n'
+    //          << dies[i]->lowerLeftX << " " << dies[i]->lowerLeftY << " " << dies[i]->higherRightX << " " << dies[i]->higherRightY << " " << dies[i]->maxUtil << " " << dies[i]->tech << '\n'
+    //          << dies[i]->gridHeight << " " << dies[i]->rowNum << '\n';
+    // }
     fin >> JUNK >> Terminal::width >> Terminal::height >> JUNK >> Terminal::spacing;
-
-    // Todo2: Instance input
-    fin >> JUNK >> instanceNum;
+    fin >>
+        JUNK >> instanceNum;
     instances.resize(instanceNum);
+    cout << instanceNum << '\n';
     for (int i = 0; i < instanceNum; i++) {
         int type;
         fin >> JUNK >> JUNK >> junk >> junk >> type;
         instances[i].type = type - 1;
-        instances[i].pinNum = Lib[0][type].getpinNum();
+        instances[i].pinNum = Lib[0][type - 1].getpinNum();
         instances[i].pins.resize(instances[i].pinNum);
         avgWidth[0] += Lib[0][type - 1].getsizeX();
         avgWidth[1] += Lib[1][type - 1].getsizeX();
     }
+    // for (int i = 0; i < instanceNum; i++) {
+    //     cout << instances[i].pinNum << " " << instances[i].type << "\n";
+    // }
     avgWidth[0] /= instanceNum;
     avgWidth[1] /= instanceNum;
     dies[0]->gridWidth = avgWidth[0];
@@ -215,6 +229,7 @@ int main(int argc, char* argv[]) {
     // Nets Input
     fin >>
         JUNK >> netNum;
+    cout << netNum << '\n';
     netPinNum.resize(netNum);
     for (int i = 0; i < netNum; i++) {
         fin >> JUNK >> JUNK >> netPinNum[i];
@@ -222,6 +237,13 @@ int main(int argc, char* argv[]) {
             int targetInst, targetPin;
             fin >> JUNK >> junk >> targetInst >> junk >> junk >> targetPin;
             instances[targetInst - 1].pins[targetPin - 1].net = i;
+            instances[targetInst - 1].pins[targetPin - 1].name = targetPin - 1;
+        }
+    }
+    for (int i = 0; i < instanceNum; i++) {
+        cout << "inst" << i << ":\n";
+        for (int j = 0; j < instances[i].pinNum; j++) {
+            cout << instances[i].pins[j].net << " " << instances[i].pins[j].name << '\n';
         }
     }
 }
