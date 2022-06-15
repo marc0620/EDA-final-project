@@ -57,6 +57,7 @@ class LibCell {
     vector<Pin>* pins;
     int getsizeX();
     int getsizeY();
+    int getarea();
     int getpinNum();
     int gettech();
     int getname();
@@ -76,6 +77,9 @@ int LibCell::getsizeX() {
 }
 int LibCell::getsizeY() {
     return sizeY;
+}
+int LibCell::getarea() {
+    return sizeX*sizeY;
 }
 int LibCell::getpinNum() {
     return pinNum;
