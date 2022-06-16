@@ -78,18 +78,17 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
     int diemidy = (die0->lowerLeftY + die0->higherRightY)/2;
     int gridside = sqrt(terminalcount)+1;
     cout<<"gridside="<<gridside<<endl;
-    int minposx = diemidx - gridside*Terminal::eqwidth()/2 + Terminal::spacing;
+    int minposx = diemidx - ceil((double)gridside*Terminal::eqwidth()/2) + Terminal::spacing;
     cout<<"minposx="<<minposx<<endl;
     int minspotx;    
-    int minposy = diemidy - gridside*Terminal::eqheight()/2 + Terminal::spacing;
+    int minposy = diemidy - ceil((double)gridside*Terminal::eqheight()/2) + Terminal::spacing;
     cout<<"minposy="<<minposy<<endl;
     int minspoty;
-    int maxposx = diemidx + gridside*Terminal::eqwidth()/2 - Terminal::spacing/2 - Terminal::width;
+    int maxposx = diemidx + ceil((double)gridside*Terminal::eqwidth()/2) - Terminal::spacing/2 - Terminal::width;
     cout<<"maxposx="<<maxposx<<endl;
-    int maxposy = diemidy + gridside*Terminal::eqheight()/2 - Terminal::spacing/2 - Terminal::height;
-    cout<<"maxposy="<<maxposy<<endl;
     int maxspotx;
-    
+    int maxposy = diemidy + ceil((double)gridside*Terminal::eqheight()/2) - Terminal::spacing/2 - Terminal::height;
+    cout<<"maxposy="<<maxposy<<endl;
     int maxspoty;
     
     int degree = 1;
@@ -153,7 +152,7 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
         }
     }
     //terminal initialized
-
+    
     cout<<terminalcount<<endl;
     for(int i=0;i<(*nets).size();i++)
     {
@@ -168,17 +167,19 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
     int hrxlimit = die0->higherRightX - ceil((double)(Terminal::spacing/2));
     int hrylimit = die0->higherRightY - ceil((double)(Terminal::spacing/2));
 
-    vector<int> end((*nets).size());
-
+    int end[((*nets).size())];
+    
     for(int i=0;i<(*nets).size();i++)
     {
-        end[i] = 1;
         if(needterminal[i])
-        {
-            end[i] = 0;
-        }
+        end[i] = 0;
+        else
+        end[i] = 1;
+        
     }
-    while(true)
+    
+    
+    while(1<0)
     {
         int signal=1;
         for(int i=0;i<(*nets).size();i++)
@@ -192,14 +193,16 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
         {
             if(needterminal[i])
             {
-                if((terminals[i].posX + Terminal::width/2 - diemidx)*(SQN[i].getmidx() - (terminals[i].posX)) > 0)
+                if((terminals[i].posX + Terminal::width/2 - diemidx)*(SQN[i].getmidx() - (terminals[i].posX + Terminal::width/2)) > 0)
                 {
-                    terminals[i].posX ;
+                    terminals[i].posX += (SQN[i].getmidx() - (terminals[i].posX))/abs((SQN[i].getmidx() - (terminals[i].posX)));
                 }
             }
         }
-
+        break;
     }
+    
+    
     
     /* 報完再想
     int min = sentinel;
