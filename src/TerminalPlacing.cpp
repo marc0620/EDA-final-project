@@ -1,9 +1,9 @@
+#ifndef TP
+#define TP
 #include "../lib/TerminalPlacing.h"
-#include "../lib/Objects.h"
+#endif
 
-const int sentinel = 2147483647 ;
-
-void showterminalneed(vector<bool> needterminal)
+void Terminalplacement::showterminalneed(vector<bool> needterminal)
 {
     for(int i=0;i<needterminal.size();i++)
     {
@@ -15,16 +15,16 @@ void showterminalneed(vector<bool> needterminal)
     }
 }
 
-void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vector<LibCell> > Lib, Die* die0)
+void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> *nets, vector<vector<LibCell> > *Lib, Die* die0)
 {
     int terminalcount = 0;
-    vector<bool> needterminal(nets.size());
-    for(int i=0;i<nets.size();i++)
+    vector<bool> needterminal((*nets).size());
+    for(int i=0;i<(*nets).size();i++)
     {
         needterminal[i] = false;
-        int sameornot = nets[i].front()->atdie;
-        list<Inst*>::iterator itr = nets[i].begin();
-        while(itr != nets[i].end())
+        int sameornot = (*nets)[i].front()->atdie;
+        list<Inst*>::iterator itr = (*nets)[i].begin();
+        while(itr != (*nets)[i].end())
         {
             if(sameornot != (*itr)->atdie)
             {
@@ -37,17 +37,17 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     }
     //showterminalneed(needterminal);
 
-
-    vector<SquareofNet> SQN(nets.size()); 
+    vector<SquareofNet> SQN((*nets).size()); 
     for(int i=0;i<D0inst.size();i++)
     {
 
-        for(int j=0;j<D0inst[i]->pinNumused;j++)
+        for(int j=0;j<D0inst[i]->pins.size();j++)
         {
+            if(D0inst[i]->pins[j].net != -1)
             if(needterminal[D0inst[i]->pins[j].net])
             {
-                int pinrealposx = D0inst[i]->posX + (*Lib[0][D0inst[i]->type].pins)[D0inst[i]->pins[j].name].posX;
-                int pinrealposy = D0inst[i]->posY + (*Lib[0][D0inst[i]->type].pins)[D0inst[i]->pins[j].name].posY;
+                int pinrealposx = D0inst[i]->posX + (*(*Lib)[0][D0inst[i]->type].pins)[j].posX;
+                int pinrealposy = D0inst[i]->posY + (*(*Lib)[0][D0inst[i]->type].pins)[j].posY;
                 if(SQN[D0inst[i]->pins[j].net].llx > pinrealposx)
                 SQN[D0inst[i]->pins[j].net].llx = pinrealposx;
                 if(SQN[D0inst[i]->pins[j].net].lly > pinrealposy)
@@ -60,7 +60,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
         }
     }
 
-    for(int i=0;i<nets.size();i++)
+    for(int i=0;i<(*nets).size();i++)
     {
         if(needterminal[i])
         {   
@@ -72,7 +72,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
         cout<<"net "<<i+1<<" do not need a terminal"<<endl;
     }
 
-    vector<Terminal> terminals(nets.size());    /////too  large for large case
+    vector<Terminal> terminals((*nets).size());    /////too  large for large case
 
     int diemidx = (die0->lowerLeftX + die0->higherRightX)/2;
     int diemidy = (die0->lowerLeftY + die0->higherRightY)/2;
@@ -86,12 +86,14 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     int minspoty;
     int maxposx = diemidx + gridside*Terminal::eqwidth()/2 - Terminal::spacing/2 - Terminal::width;
     cout<<"maxposx="<<maxposx<<endl;
-    int maxspotx;
     int maxposy = diemidy + gridside*Terminal::eqheight()/2 - Terminal::spacing/2 - Terminal::height;
     cout<<"maxposy="<<maxposy<<endl;
+    int maxspotx;
+    
     int maxspoty;
     
     int degree = 1;
+    cout<<terminalcount;
     for(int i=0;i<terminalcount;i++)
     {
         if(i == degree*degree - degree)
@@ -120,7 +122,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
         if(i%2 == 0)
         {
             int min = sentinel;
-            for(int j=0;j<nets.size();j++)
+            for(int j=0;j<(*nets).size();j++)
             {
                 if(needterminal[j])
                 {
@@ -137,7 +139,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
        else
        {
             int max = -1*sentinel;
-            for(int j=0;j<nets.size();j++)
+            for(int j=0;j<(*nets).size();j++)
             {
                 if(needterminal[j])
                 {
@@ -153,7 +155,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     //terminal initialized
 
     cout<<terminalcount<<endl;
-    for(int i=0;i<nets.size();i++)
+    for(int i=0;i<(*nets).size();i++)
     {
         if(needterminal[i])
         {
@@ -166,9 +168,9 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     int hrxlimit = die0->higherRightX - ceil((double)(Terminal::spacing/2));
     int hrylimit = die0->higherRightY - ceil((double)(Terminal::spacing/2));
 
-    vector<int> end(nets.size());
+    vector<int> end((*nets).size());
 
-    for(int i=0;i<nets.size();i++)
+    for(int i=0;i<(*nets).size();i++)
     {
         end[i] = 1;
         if(needterminal[i])
@@ -179,19 +181,21 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     while(true)
     {
         int signal=1;
-        for(int i=0;i<nets.size();i++)
+        for(int i=0;i<(*nets).size();i++)
         {
             signal *= end[i];
         }
         if(signal == 1)
         break;
 
-        for(int i=0;i<nets.size();i++)
+        for(int i=0;i<(*nets).size();i++)
         {
             if(needterminal[i])
             {
-                if((terminals[i].posX + Terminal::width/2 - diemidx)*(SQN[i].getmidx() - terminals[i].posX) > 0)
-                ;
+                if((terminals[i].posX + Terminal::width/2 - diemidx)*(SQN[i].getmidx() - (terminals[i].posX)) > 0)
+                {
+                    terminals[i].posX ;
+                }
             }
         }
 
@@ -199,7 +203,7 @@ void Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*>> nets, vector<vec
     
     /* 報完再想
     int min = sentinel;
-    for(int j=0;j<nets.size();j++)
+    for(int j=0;j<(*nets).size();j++)
     {
         if(needterminal[j])
         {

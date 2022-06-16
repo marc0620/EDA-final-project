@@ -31,7 +31,7 @@ class Terminal {
 
 class Inst {
    public:
-    int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, pinNumused, cr, gposX, gposY;
+    int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, cr, gposX, gposY;
     vector<Pin> pins;
     list<pair<Inst*, float>> adjlist;
 

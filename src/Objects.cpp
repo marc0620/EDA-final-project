@@ -21,7 +21,6 @@ int Terminal::eqheight(){return Terminal::height + Terminal::spacing;}
 int Terminal::eqarea() {return (Terminal::width + Terminal::spacing) * (Terminal::height + Terminal::spacing);}
 
 Inst::Inst() {
-    pinNumused = 0;
     cr = 0;
 }
 
@@ -31,7 +30,6 @@ Inst::Inst(int posX, int posY, int sizeY, int sizeX, int pinNum) {
     sizeY = sizeY;
     sizeX = sizeX;
     pinNum = pinNum;
-    pinNumused = 0;
     cr = 0;
 }
 

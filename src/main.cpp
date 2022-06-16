@@ -10,6 +10,7 @@
 #ifndef SA
 #define SA
 #include "../lib/SimulatedAnnealing.h"
+#include "../lib/TerminalPlacing.h"
 #endif  // !SA
 using namespace std;
 
@@ -114,9 +115,11 @@ int main(int argc, char* argv[]) {
     //     }
     // }
 
+
     vector<Inst*> D0inst, D1inst;
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
 
+    
     showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
@@ -131,6 +134,9 @@ int main(int argc, char* argv[]) {
     dies[0]->instNum = D0inst.size();
     dies[1]->instances = D1inst;
     dies[1]->instNum = D1inst.size();
+
+    Terminalplacement TP;
+    TP.Terminal_Placing(D0inst, &nets, &Lib, dies[0]);
 }
 // SimulatedAnnealing SAD0(netNum);
 // SAD0.entireProcedure((*dies[0]), Lib);
