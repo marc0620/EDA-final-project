@@ -50,9 +50,10 @@ void showtwodie(vector<Inst*> D0,vector<Inst*> D1){
 	cout<<"Inst "<<D1[i]->name+1<<endl;
 }
 
-pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vector<LibCell> > Lib, Die* die0, Die* die1, vector<list<Inst> > nets){
+void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die* die1, vector<list<Inst*> > nets, vector<Inst*>* D0inst, vector<Inst*>* D1inst){
 	//pair<Inst*,list<pair<Inst*,int> > > Adjlist[instances.size()];
 	//adjacency list define
+    vector<Inst> instances = *insts;
 	vector<double> nk;
 	nk.resize(nets.size());
 	for(int i=0;i<nk.size();i++){
@@ -79,12 +80,11 @@ pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vect
 		} 
 	} 
 	//adjacency list doned
-	showadjlist(instances);
+	//showadjlist(instances);
 	
 	//partition start
 	int D0area=0;
 	int D1area=0;
-	vector<Inst*> D0inst,D1inst;
 	for(int i=0;i<instances.size();i++){
 		if(D0area*100/die0->maxUtil <= D1area*100/die1->maxUtil){
 			instances[i].atdie = 0;
@@ -132,10 +132,10 @@ pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vect
 	
 	while(count < instances.size())
 	{
-		cout<<"test4   index= "<<currentcost<<" - "<<idealtotalcost<<endl;
+		//cout<<"test4   index= "<<currentcost<<" - "<<idealtotalcost<<endl;
 		int outward = -1;
 		int index = (currentcost-idealtotalcost) >= 0 ? min(2*CRsize, (currentcost - idealtotalcost) + CRsize) : max(0, (currentcost - idealtotalcost) + CRsize);
-		cout<<index<<endl;
+		//cout<<index<<endl;
 		if(D0area*100/die0->maxUtil >= D1area*100/die1->maxUtil)	//move a inst from d0 to d1
 		{	
 			while(CRD0[index].size() == 0 && index != 2*CRsize && index != 0 && index != CRsize && index != (currentcost - idealtotalcost)*2 + CRsize)	//search the specific cr
@@ -175,6 +175,7 @@ pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vect
 				D1area += Lib[1][CRD0[index].front()->type].getarea();
 				//currentcost -= CRD0[index].front()->cr;
 				CRD0[index].front()->atdie ^= 1; 
+                CRD0[index].front()->cr *= -1;
 				currentcost = getcurrentcost(instances);
 				CRD0[index].pop_front();
 			}
@@ -220,6 +221,7 @@ pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vect
 				D1area -= Lib[1][CRD1[index].front()->type].getarea();
 				//currentcost -= CRD1[index].front()->cr;
 				CRD1[index].front()->atdie ^= 1; 
+                CRD1[index].front()->cr *= -1;
 				currentcost = getcurrentcost(instances);
 				CRD1[index].pop_front();
 			}
@@ -237,13 +239,17 @@ pair<vector<Inst*>,vector<Inst*> > Partition(vector<Inst> instances, vector<vect
 	//cout<<"inst "<<i+1<<" is on d"<<instances[i].atdie<<endl;
 	//showcurrentcost(instances);
 	//showcostreduction(instances);
+
+    *insts = instances;
 	
 	for(int i=0;i<instances.size();i++){
 		if(instances[i].atdie == 0)
-		D0inst.push_back(&instances[i]);
+		(*D0inst).push_back(&(*insts)[i]);
 		else
-		D1inst.push_back(&instances[i]);
+		(*D1inst).push_back(&(*insts)[i]);
 	}
+
+
 	//showtwodie(D0inst,D1inst); 
-	return make_pair(D0inst,D1inst);
+	return;
 }

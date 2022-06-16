@@ -21,6 +21,10 @@ class Terminal {
     static void setHeight(int i);
     static void setSpacing(int i);
 
+    Terminal() {posX = posY = -1;}
+
+    static int eqwidth();
+    static int eqheight();
     static int eqarea();
 };
 
