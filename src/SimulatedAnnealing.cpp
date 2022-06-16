@@ -15,6 +15,10 @@ void SimulatedAnnealing::pinsLookUp(Inst* a, LibCell& b) {
         cout << "error: copy wrong cell" << '\n';
     }
 }
+SimulatedAnnealing::SimulatedAnnealing(int nn) {
+    nets.resize(nn);
+    srand(time(NULL));
+}
 void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
     int r = 0, c = 0;
     if (die.instances.size() > die.colNum * die.rowNum) {

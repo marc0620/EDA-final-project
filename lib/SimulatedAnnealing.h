@@ -19,7 +19,7 @@ class SimulatedAnnealing {
     SimulatedAnnealing() {
         srand(time(NULL));
     };
-    SimulatedAnnealing(Die& d, int nn);
+    SimulatedAnnealing(int nn);
 
     void pinsLookUp(Inst* a, LibCell& b);
     void randomLayer(Die& die, vector<vector<LibCell>>& lib);
