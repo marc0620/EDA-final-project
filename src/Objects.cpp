@@ -7,16 +7,10 @@
 #include <string>
 #include <vector>
 using namespace std;
-Pin::Pin(int name, int posX, int posY) {
+Pin::Pin(int name, int relativePosX, int relativePosY) {
     name = name;
-    posX = posX;
-    posY = posY;
-}
-Pin::Pin(int name, int posX, int posY, int net) {
-    name = name;
-    posX = posX;
-    posY = posY;
-    net = net;
+    relativePosX = relativePosX;
+    relativePosY = relativePosY;
 }
 int Terminal::width;
 int Terminal::height;
@@ -41,8 +35,8 @@ Inst::Inst(int posX, int posY, int sizeY, int sizeX, int pinNum) {
     cr = 0;
 }
 
-int LibCell::getname() {
-    return name;
+int LibCell::gettype() {
+    return type;
 }
 int LibCell::getsizeX() {
     return sizeX;
@@ -72,11 +66,11 @@ void LibCell::setpinNum(int i) {
 void LibCell::settech(int i) {
     tech = i;
 }
-void LibCell::setname(int i) {
-    name = i;
+void LibCell::settype(int i) {
+    type = i;
 }
 LibCell::LibCell(int n, int t, int X, int Y, int pn) {
-    name = n;
+    type = n;
     tech = t;
     pinNum = pn;
     sizeX = X;

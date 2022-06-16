@@ -1,17 +1,16 @@
+#include <cmath>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
+#include <list>
 #include <string>
 #include <vector>
-#include <list>
-#include <cmath>
 using namespace std;
 class Pin {
    public:
-    int name, posX, posY, net;
+    int name, posX, posY, net, relativePosX, relativePosY;
     Pin(){};
-    Pin(int name, int posX, int posY);
-    Pin(int name, int posX, int posY, int net);
+    Pin(int name, int relativePosX, int relativePosY);
 };
 
 class Terminal {
@@ -29,7 +28,7 @@ class Inst {
    public:
     int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, pinNumused, cr;
     vector<Pin> pins;
-    list<pair<Inst*,float> > adjlist;
+    list<pair<Inst*, float>> adjlist;
 
     Inst();
     Inst(int posX, int posY, int sizeY, int sizeX, int pinNum);
@@ -37,7 +36,7 @@ class Inst {
 
 class LibCell {
    private:
-    int name, sizeX, sizeY, pinNum, tech;
+    int type, sizeX, sizeY, pinNum, tech;
 
    public:
     vector<Pin>* pins;
@@ -46,21 +45,29 @@ class LibCell {
     int getarea();
     int getpinNum();
     int gettech();
-    int getname();
+    int gettype();
     void setsizeX(int i);
     void setsizeY(int i);
     void setpinNum(int i);
     void settech(int i);
-    void setname(int i);
+    void settype(int i);
     LibCell(){};
-    LibCell(int name, int tech, int sizeX, int sizeY, int pinNum);
+    LibCell(int type, int tech, int sizeX, int sizeY, int pinNum);
 };
 class Die {
    public:
-    int lowerLeftX, lowerLeftY, higherRightX, higherRightY, gridWidth, gridHeight, tech, maxUtil, rowNum, colNum, area;
-    vector<vector<int>> grid;
+    int lowerLeftX, lowerLeftY, higherRightX, higherRightY, gridWidth, gridHeight, tech, maxUtil, rowNum, colNum, instNum, area;
+    vector<vector<Inst*>> grid;
+    vector<Inst*> instances;
+    int gridStartX;
     Die(){};
     Die(int lowerLeftX, int lowerLeftY, int higherRightX, int higherRightY);
+};
+class Net {
+   public:
+    vector<Pin*> pins;
+    int name;
+    int num;
 };
 // int HPWL() {
 // }

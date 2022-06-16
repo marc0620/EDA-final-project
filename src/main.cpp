@@ -7,12 +7,17 @@
 #define OBJ
 #include "../lib/Objects.h"
 #endif
+#ifndef SA
+#define SA
+#include "../lib/SimulatedAnnealing.h"
+#endif  // !SA
 using namespace std;
 
 pair<vector<Inst*>, vector<Inst*>> Partition(vector<Inst> , vector<vector<LibCell> >, Die*, Die*, vector<list<Inst> >);
 void showtwodie(vector<Inst*>,vector<Inst*>);
 
 int main(int argc, char* argv[]) {
+    // inputting
     int techNum, instanceNum, netNum;
     fstream fin(argv[1]);
     fstream fout;
@@ -27,8 +32,6 @@ int main(int argc, char* argv[]) {
     vector<int> netPinNum;
     vector<list<Inst> > nets;
     int64_t avgWidth[2] = {0};
-    // input Technology Library
-
     for (int i = 0; i < techNum; i++) {
         int tech;
         fin >> JUNK >> junk >> junk;
@@ -43,7 +46,7 @@ int main(int argc, char* argv[]) {
                 cout << "error: input format fault" << '\n';
             }
             fin >> sizeX >> sizeY >> pinNum;
-            Lib[i][j].setname(j);
+            Lib[i][j].settype(j);
             Lib[i][j].setsizeX(sizeX);
             Lib[i][j].setsizeY(sizeY);
             Lib[i][j].setpinNum(pinNum);
@@ -59,11 +62,7 @@ int main(int argc, char* argv[]) {
             }
             Lib[i][j].pins = pins;
         }
-        // cout << junk << "tech:" << tech;
     }
-
-    // // Todo1: constraint input
-
     fin >> JUNK >> lowerLeftX >> lowerLeftY >> higherRightX >> higherRightY;
     Die* dies[2];
     dies[0] = new Die(lowerLeftX, lowerLeftY, higherRightX, higherRightY);
@@ -86,13 +85,14 @@ int main(int argc, char* argv[]) {
         instances[i].type = type - 1;
         instances[i].pinNum = Lib[0][type - 1].getpinNum();
         instances[i].pins.resize(instances[i].pinNum);
+        instances[i].name = i;
         avgWidth[0] += Lib[0][type - 1].getsizeX();
         avgWidth[1] += Lib[1][type - 1].getsizeX();
     }
     avgWidth[0] /= instanceNum;
     avgWidth[1] /= instanceNum;
-    dies[0]->gridWidth = avgWidth[0];
-    dies[1]->gridWidth = avgWidth[1];
+    dies[0]->gridWidth = avgWidth[0] + 1;
+    dies[1]->gridWidth = avgWidth[1] + 1;
     // Nets Input
     fin >> JUNK >> netNum;
     netPinNum.resize(netNum);
@@ -108,6 +108,7 @@ int main(int argc, char* argv[]) {
         	nets[i].push_back(instances[targetInst-1]);
         }
     }
+<<<<<<< HEAD
 
     for (int i = 0; i < instanceNum; i++) {
     	instances[i].pins.resize(instances[i].pinNumused);
@@ -127,4 +128,18 @@ int main(int argc, char* argv[]) {
     D1inst = TEMP.second;
     
     showtwodie(D0inst,D1inst);
+=======
+    // end of input
+
+    for (int i = 0; i < 2; i++) {
+        dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
+        dies[i]->grid.resize(dies[i]->colNum);
+        for (int j = 0; j < dies[i]->colNum; j++) {
+            dies[i]->grid[j].resize(dies[i]->rowNum);
+            fill(dies[i]->grid[j].begin(), dies[i]->grid[j].end(), nullptr);
+        }
+        dies[i]->gridStartX = (dies[i]->higherRightX - dies[i]->gridWidth * dies[i]->colNum) / 2;
+    }
+    // remember to set die.instnum after gets the partition!!
+>>>>>>> e7284d6 (simple anneal(not tested))
 }

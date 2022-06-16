@@ -5,6 +5,8 @@
     "**/templates/**/*.html": "django-html",
     "vector": "cpp",
     "iosfwd": "cpp",
-    "iostream": "cpp"
+    "iostream": "cpp",
+    "system_error": "cpp",
+    "xlocale": "cpp"
   }
 }
