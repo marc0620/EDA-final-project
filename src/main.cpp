@@ -108,7 +108,6 @@ int main(int argc, char* argv[]) {
         	nets[i].push_back(instances[targetInst-1]);
         }
     }
-<<<<<<< HEAD
 
     for (int i = 0; i < instanceNum; i++) {
     	instances[i].pins.resize(instances[i].pinNumused);
@@ -128,7 +127,6 @@ int main(int argc, char* argv[]) {
     D1inst = TEMP.second;
     
     showtwodie(D0inst,D1inst);
-=======
     // end of input
 
     for (int i = 0; i < 2; i++) {
@@ -141,5 +139,4 @@ int main(int argc, char* argv[]) {
         dies[i]->gridStartX = (dies[i]->higherRightX - dies[i]->gridWidth * dies[i]->colNum) / 2;
     }
     // remember to set die.instnum after gets the partition!!
->>>>>>> e7284d6 (simple anneal(not tested))
 }
