@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     vector<vector<LibCell>> Lib(techNum);
     vector<Inst> instances;
     vector<int> netPinNum;
-    vector<list<Inst>> nets;
+    vector<list<Inst*>> nets;
     int64_t avgWidth[2] = {0};
     for (int i = 0; i < techNum; i++) {
         int tech;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
             int targetInst, targetPin;
             fin >> JUNK >> junk >> targetInst >> junk >> junk >> targetPin;
             instances[targetInst - 1].pins[targetPin - 1].net = i;  /////
-            nets[i].push_back(instances[targetInst - 1]);
+            nets[i].push_back(&instances[targetInst - 1]);
         }
     }
     // end of input
@@ -114,11 +114,8 @@ int main(int argc, char* argv[]) {
     //     }
     // }
 
-    pair<vector<Inst*>, vector<Inst*>> TEMP;
-    TEMP = Partition(instances, Lib, dies[0], dies[1], nets);
     vector<Inst*> D0inst, D1inst;
-    D0inst = TEMP.first;
-    D1inst = TEMP.second;
+    Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
 
     showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
@@ -134,6 +131,7 @@ int main(int argc, char* argv[]) {
     dies[0]->instNum = D0inst.size();
     dies[1]->instances = D1inst;
     dies[1]->instNum = D1inst.size();
-    // SimulatedAnnealing SAD0(netNum);
-    // SAD0.entireProcedure((*dies[0]), Lib);
-    //  remember to set die.instnum after gets the partition!!
+}
+// SimulatedAnnealing SAD0(netNum);
+// SAD0.entireProcedure((*dies[0]), Lib);
+//  remember to set die.instnum after gets the partition!!
