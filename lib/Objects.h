@@ -1,7 +1,10 @@
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
+#include <list>
+#include <cmath>
 using namespace std;
 class Pin {
    public:
@@ -18,13 +21,17 @@ class Terminal {
     static void setWidth(int i);
     static void setHeight(int i);
     static void setSpacing(int i);
+
+    static int eqarea();
 };
 
 class Inst {
    public:
-    int posX, posY, sizeY, sizeX, pinNum, type;
+    int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, pinNumused, cr;
     vector<Pin> pins;
-    Inst(){};
+    list<pair<Inst*,float> > adjlist;
+
+    Inst();
     Inst(int posX, int posY, int sizeY, int sizeX, int pinNum);
 };
 
@@ -36,6 +43,7 @@ class LibCell {
     vector<Pin>* pins;
     int getsizeX();
     int getsizeY();
+    int getarea();
     int getpinNum();
     int gettech();
     int getname();
@@ -49,7 +57,7 @@ class LibCell {
 };
 class Die {
    public:
-    int lowerLeftX, lowerLeftY, higherRightX, higherRightY, gridWidth, gridHeight, tech, maxUtil, rowNum, colNum;
+    int lowerLeftX, lowerLeftY, higherRightX, higherRightY, gridWidth, gridHeight, tech, maxUtil, rowNum, colNum, area;
     vector<vector<int>> grid;
     Die(){};
     Die(int lowerLeftX, int lowerLeftY, int higherRightX, int higherRightY);

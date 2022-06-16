@@ -8,6 +8,10 @@
 #include "../lib/Objects.h"
 #endif
 using namespace std;
+
+pair<vector<Inst*>, vector<Inst*>> Partition(vector<Inst> , vector<vector<LibCell> >, Die*, Die*, vector<list<Inst> >);
+void showtwodie(vector<Inst*>,vector<Inst*>);
+
 int main(int argc, char* argv[]) {
     int techNum, instanceNum, netNum;
     fstream fin(argv[1]);
@@ -21,6 +25,7 @@ int main(int argc, char* argv[]) {
     vector<vector<LibCell>> Lib(techNum);
     vector<Inst> instances;
     vector<int> netPinNum;
+    vector<list<Inst> > nets;
     int64_t avgWidth[2] = {0};
     // input Technology Library
 
@@ -77,6 +82,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < instanceNum; i++) {
         int type;
         fin >> JUNK >> JUNK >> junk >> junk >> type;
+        instances[i].name = i;
         instances[i].type = type - 1;
         instances[i].pinNum = Lib[0][type - 1].getpinNum();
         instances[i].pins.resize(instances[i].pinNum);
@@ -90,19 +96,35 @@ int main(int argc, char* argv[]) {
     // Nets Input
     fin >> JUNK >> netNum;
     netPinNum.resize(netNum);
+    nets.resize(netNum);
     for (int i = 0; i < netNum; i++) {
         fin >> JUNK >> JUNK >> netPinNum[i];
         for (int j = 0; j < netPinNum[i]; j++) {
             int targetInst, targetPin;
             fin >> JUNK >> junk >> targetInst >> junk >> junk >> targetPin;
-            instances[targetInst - 1].pins[targetPin - 1].net = i;
-            instances[targetInst - 1].pins[targetPin - 1].name = targetPin - 1;
+            instances[targetInst - 1].pins[instances[targetInst - 1].pinNumused].net = i; /////
+            instances[targetInst - 1].pins[instances[targetInst - 1].pinNumused].name = targetPin - 1;
+            instances[targetInst - 1].pinNumused++;
+        	nets[i].push_back(instances[targetInst-1]);
         }
     }
+
+    for (int i = 0; i < instanceNum; i++) {
+    	instances[i].pins.resize(instances[i].pinNumused);
+	}
     // for (int i = 0; i < instanceNum; i++) {
     //     cout << "inst" << i << ":\n";
     //     for (int j = 0; j < instances[i].pinNum; j++) {
     //         cout << instances[i].pins[j].net << " " << instances[i].pins[j].name << '\n';
     //     }
     // }
+
+
+    pair<vector<Inst*>,vector<Inst*> > TEMP;
+    TEMP = Partition(instances, Lib, dies[0], dies[1], nets);
+    vector<Inst*> D0inst,D1inst;
+    D0inst = TEMP.first;
+    D1inst = TEMP.second;
+    
+    showtwodie(D0inst,D1inst);
 }

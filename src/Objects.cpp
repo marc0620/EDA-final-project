@@ -1,6 +1,6 @@
 #ifndef OBJ
 #define OBJ
-#include "../src/Objects.h"
+#include "../lib/Objects.h"
 #endif
 #include <fstream>
 #include <iostream>
@@ -21,6 +21,15 @@ Pin::Pin(int name, int posX, int posY, int net) {
 int Terminal::width;
 int Terminal::height;
 int Terminal::spacing;
+int Terminal::eqarea(){
+    return (Terminal::width + Terminal::spacing)*(Terminal::height + Terminal::spacing);
+}
+
+Inst::Inst()
+{
+    pinNumused = 0;
+    cr = 0;
+}
 
 Inst::Inst(int posX, int posY, int sizeY, int sizeX, int pinNum) {
     posX = posX;
@@ -28,6 +37,8 @@ Inst::Inst(int posX, int posY, int sizeY, int sizeX, int pinNum) {
     sizeY = sizeY;
     sizeX = sizeX;
     pinNum = pinNum;
+    pinNumused = 0;
+    cr = 0;
 }
 
 int LibCell::getname() {
@@ -38,6 +49,9 @@ int LibCell::getsizeX() {
 }
 int LibCell::getsizeY() {
     return sizeY;
+}
+int LibCell::getarea() {
+    return sizeX*sizeY;
 }
 int LibCell::getpinNum() {
     return pinNum;
@@ -73,6 +87,7 @@ Die::Die(int llX, int llY, int hrX, int hrY) {
     lowerLeftY = llY;
     higherRightX = hrX;
     higherRightY = hrY;
+    area = (hrX-llX)*(hrY-llY);
 }
 void InstDeepCopy(Inst& i, LibCell& l) {
     i.pinNum = l.getpinNum();
