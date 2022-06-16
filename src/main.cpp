@@ -13,10 +13,8 @@
 #endif  // !SA
 using namespace std;
 
-void Partition(vector<Inst>* , vector<vector<LibCell> >, Die*, Die*, vector<list<Inst*> >, vector<Inst*>*, vector<Inst*>*);
-void showtwodie(vector<Inst*>,vector<Inst*>);
-
-
+void Partition(vector<Inst>*, vector<vector<LibCell>>, Die*, Die*, vector<list<Inst*>>, vector<Inst*>*, vector<Inst*>*);
+void showtwodie(vector<Inst*>, vector<Inst*>);
 
 int main(int argc, char* argv[]) {
     // inputting
@@ -32,7 +30,7 @@ int main(int argc, char* argv[]) {
     vector<vector<LibCell>> Lib(techNum);
     vector<Inst> instances;
     vector<int> netPinNum;
-    vector<list<Inst*> > nets;
+    vector<list<Inst>> nets;
     int64_t avgWidth[2] = {0};
     for (int i = 0; i < techNum; i++) {
         int tech;
@@ -104,26 +102,25 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < netPinNum[i]; j++) {
             int targetInst, targetPin;
             fin >> JUNK >> junk >> targetInst >> junk >> junk >> targetPin;
-            instances[targetInst - 1].pins[instances[targetInst - 1].pinNumused].net = i; /////
-            instances[targetInst - 1].pins[instances[targetInst - 1].pinNumused].name = targetPin - 1;
-            instances[targetInst - 1].pinNumused++;
-        	nets[i].push_back(&instances[targetInst-1]);
+            instances[targetInst - 1].pins[targetPin - 1].net = i;  /////
+            nets[i].push_back(instances[targetInst - 1]);
         }
     }
-
-    for (int i = 0; i < instanceNum; i++) {
-    	instances[i].pins.resize(instances[i].pinNumused);
-	}
-
-    vector<Inst*> D0inst,D1inst;
-    Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
-    
-    //for(int i=0;i<instances.size();i++)
-	//cout<<"inst "<<i+1<<" is on d"<<instances[i].atdie<<endl;
-    
-    //showtwodie(D0inst,D1inst);
     // end of input
+    // for (int i = 0; i < instanceNum; i++) {
+    //     cout << "inst" << i << ":\n";
+    //     for (int j = 0; j < instances[i].pinNum; j++) {
+    //         cout << instances[i].pins[j].net << " " << instances[i].pins[j].name << '\n';
+    //     }
+    // }
 
+    pair<vector<Inst*>, vector<Inst*>> TEMP;
+    TEMP = Partition(instances, Lib, dies[0], dies[1], nets);
+    vector<Inst*> D0inst, D1inst;
+    D0inst = TEMP.first;
+    D1inst = TEMP.second;
+
+    showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
         dies[i]->grid.resize(dies[i]->colNum);
@@ -133,10 +130,10 @@ int main(int argc, char* argv[]) {
         }
         dies[i]->gridStartX = (dies[i]->higherRightX - dies[i]->gridWidth * dies[i]->colNum) / 2;
     }
-    // remember to set die.instnum after gets the partition!!
-
-    //D0 placemaent done
-    //test data announcement
-    
-    //Terminal_Placing(D0inst, nets, Lib, dies[0]);
-}
+    dies[0]->instances = D0inst;
+    dies[0]->instNum = D0inst.size();
+    dies[1]->instances = D1inst;
+    dies[1]->instNum = D1inst.size();
+    // SimulatedAnnealing SAD0(netNum);
+    // SAD0.entireProcedure((*dies[0]), Lib);
+    //  remember to set die.instnum after gets the partition!!
