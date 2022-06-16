@@ -16,9 +16,9 @@ Pin::Pin(int name, int relativePosX, int relativePosY) {
 int Terminal::width;
 int Terminal::height;
 int Terminal::spacing;
-int Terminal::eqarea() {
-    return (Terminal::width + Terminal::spacing) * (Terminal::height + Terminal::spacing);
-}
+int Terminal::eqwidth(){return Terminal::width + Terminal::spacing;}
+int Terminal::eqheight(){return Terminal::height + Terminal::spacing;}
+int Terminal::eqarea() {return (Terminal::width + Terminal::spacing) * (Terminal::height + Terminal::spacing);}
 
 Inst::Inst() {
     pinNumused = 0;
