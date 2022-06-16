@@ -8,6 +8,7 @@
 #include <vector>
 using namespace std;
 Pin::Pin(int name, int relativePosX, int relativePosY) {
+    net = -1;
     name = name;
     relativePosX = relativePosX;
     relativePosY = relativePosY;
@@ -15,12 +16,11 @@ Pin::Pin(int name, int relativePosX, int relativePosY) {
 int Terminal::width;
 int Terminal::height;
 int Terminal::spacing;
-int Terminal::eqwidth(){return 2*ceil((double)(width + spacing)/2);}
-int Terminal::eqheight(){return 2*ceil((double)(height + spacing)/2);}
-int Terminal::eqarea(){ return (Terminal::width + Terminal::spacing)*(Terminal::height + Terminal::spacing);}
+int Terminal::eqarea() {
+    return (Terminal::width + Terminal::spacing) * (Terminal::height + Terminal::spacing);
+}
 
-Inst::Inst()
-{
+Inst::Inst() {
     pinNumused = 0;
     cr = 0;
 }
@@ -45,7 +45,7 @@ int LibCell::getsizeY() {
     return sizeY;
 }
 int LibCell::getarea() {
-    return sizeX*sizeY;
+    return sizeX * sizeY;
 }
 int LibCell::getpinNum() {
     return pinNum;
@@ -81,7 +81,7 @@ Die::Die(int llX, int llY, int hrX, int hrY) {
     lowerLeftY = llY;
     higherRightX = hrX;
     higherRightY = hrY;
-    area = (hrX-llX)*(hrY-llY);
+    area = (hrX - llX) * (hrY - llY);
 }
 void InstDeepCopy(Inst& i, LibCell& l) {
     i.pinNum = l.getpinNum();

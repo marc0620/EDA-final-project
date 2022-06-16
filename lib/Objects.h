@@ -9,7 +9,10 @@ using namespace std;
 class Pin {
    public:
     int name, posX, posY, net, relativePosX, relativePosY;
-    Pin(){};
+    Pin() {
+        net = -1;
+        name = -1;
+    };
     Pin(int name, int relativePosX, int relativePosY);
 };
 
@@ -21,16 +24,12 @@ class Terminal {
     static void setHeight(int i);
     static void setSpacing(int i);
 
-    Terminal() {posX = posY = -1;}
-
-    static int eqwidth();
-    static int eqheight();
     static int eqarea();
 };
 
 class Inst {
    public:
-    int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, pinNumused, cr;
+    int posX, posY, sizeY, sizeX, pinNum, name, type, atdie, pinNumused, cr, gposX, gposY;
     vector<Pin> pins;
     list<pair<Inst*, float>> adjlist;
 
