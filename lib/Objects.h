@@ -20,10 +20,12 @@ class Terminal {
    public:
     static int width, height, spacing;
     int posX, posY;
+    Terminal  *left, *right, *up, *down;
+    Terminal(){posX=-1; posY=-1; left = right = up = down = NULL;}
+
     static void setWidth(int i);
     static void setHeight(int i);
     static void setSpacing(int i);
-    Terminal(){posX=-1; posY=-1;}
 
     static int eqwidth();
     static int eqheight();

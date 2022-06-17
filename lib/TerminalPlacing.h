@@ -18,5 +18,5 @@ class Terminalplacement
     public:
      Terminalplacement(){}
      void showterminalneed(vector<bool>);
-     void Terminal_Placing(vector<Inst*>, vector<list<Inst*>>*, vector<vector<LibCell> >*, Die* );
+     void Terminal_Placing(vector<Terminal>*, vector<bool>*, vector<Inst*>, vector<list<Inst*>>*, vector<vector<LibCell> >*, Die* );
 };
