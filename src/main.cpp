@@ -146,6 +146,7 @@ int main(int argc, char* argv[]) {
     
     vector<Terminal> terminals(nets.size());
     vector<bool> needterminal(nets.size());
+    
     Terminalplacement TP;
     TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
 
