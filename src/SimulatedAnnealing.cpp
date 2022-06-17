@@ -20,9 +20,10 @@ void SimulatedAnnealing::pinsLookUp(Inst* a, LibCell& b) {
     }
 }
 
-SimulatedAnnealing::SimulatedAnnealing(int nn) {
+SimulatedAnnealing::SimulatedAnnealing(int nn, char m) {
     nets.resize(nn);
     srand(time(NULL));
+    mode = m;
 }
 
 void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
@@ -63,7 +64,7 @@ void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
         }
     }
     previousCost = Cost(die);
-    // cout << "Cost" << previousCost;
+    cout << "Init_Cost" << previousCost << endl;
 }
 
 void SimulatedAnnealing::pinPlacer(Inst* inst) {
@@ -147,7 +148,7 @@ void SimulatedAnnealing::instMove(Die& die) {
     } else
         currentCost = Cost(die);
     // cout << "sum out" << endl;
-    cout << " acc " << accept() << endl;
+    // cout << " acc " << accept() << endl;
     if (accept() == 'a') {
         if (swap) {
             currentBest[originX][originY] = die.grid[x][y];
@@ -198,7 +199,39 @@ char SimulatedAnnealing::accept() {
             return 'c';
     }
 }
+void SimulatedAnnealing::recover(Die& die) {
+    vector<Inst*> rowComponent;
+    rowComponent.reserve(die.colNum);
+    vector<int> leftmost, rightmost;
+    leftmost.reserve(die.colNum);
+    rightmost.reserve(die.colNum);
+    for (int i = 0; i < die.rowNum; i++) {
+        int sum = 0;
 
+        for (int j = 0; j < die.colNum; j++) {
+            if (die.grid[j][i] != nullptr) {
+                leftmost.push_back(sum);
+                rowComponent.push_back(die.grid[j][i]);
+                sum += die.grid[j][i]->sizeX;
+            }
+        }
+        sum = 0;
+        for (int j = rowComponent.size() - 1; j >= 0; j--) {
+            rightmost.insert(rightmost.begin(), die.higherRightX - sum);
+            sum += rowComponent[j]->sizeX;
+        }
+        for (int j = 0; j < rowComponent.size(); j++) {
+            rowComponent[j]->posX = (rowComponent[j]->posX < leftmost[j] ? leftmost[j] : rowComponent[j]->posX);
+            rowComponent[j]->posX = (rowComponent[j]->posX > rightmost[j] ? rightmost[j] : rowComponent[j]->posX);
+            if (j > 0) {
+                rowComponent[j]->posX = (rowComponent[j]->posX < (rowComponent[j - 1]->posX + rowComponent[j - 1]->sizeX) ? (rowComponent[j - 1]->posX + rowComponent[j - 1]->sizeX) : rowComponent[j]->posX);
+            }
+        }
+        leftmost.clear();
+        rightmost.clear();
+        rowComponent.clear();
+    }
+}
 void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib) {
     randomLayer(die, lib);
 
@@ -207,20 +240,20 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
         count++;
         temperature *= 0.9;
         instMove(die);
-        cout << "grid: " << endl;
-        for (int j = 0; j < die.rowNum; j++) {
-            for (int i = 0; i < die.colNum; i++) {
-                cout << ((die.grid[i][j] != nullptr) ? die.grid[i][j]->name : -1) << " ";
-            }
-            cout << endl;
-        }
-        cout << "current best:" << endl;
-        for (int j = 0; j < die.rowNum; j++) {
-            for (int i = 0; i < die.colNum; i++) {
-                cout << ((currentBest[i][j] != nullptr) ? currentBest[i][j]->name : -1) << " ";
-            }
-            cout << endl;
-        }
+        // cout << "grid: " << endl;
+        // for (int j = 0; j < die.rowNum; j++) {
+        //     for (int i = 0; i < die.colNum; i++) {
+        //         cout << ((die.grid[i][j] != nullptr) ? die.grid[i][j]->name : -1) << " ";
+        //     }
+        //     cout << endl;
+        // }
+        // cout << "current best:" << endl;
+        // for (int j = 0; j < die.rowNum; j++) {
+        //     for (int i = 0; i < die.colNum; i++) {
+        //         cout << ((currentBest[i][j] != nullptr) ? currentBest[i][j]->name : -1) << " ";
+        //     }
+        //     cout << endl;
+        // }
         // cout << count << endl;
     }
     for (int j = 0; j < die.rowNum; j++) {
@@ -230,4 +263,9 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
         }
         cout << endl;
     }
+    recover(die);
+    for (int i = 0; i < die.instNum; i++) {
+        cout << "(inst" << i + 1 << ", posX:" << die.instances[i]->posX << ", posY:" << die.instances[i]->posY << " )" << endl;
+    }
+    cout << "COST" << Cost(die) << endl;
 }

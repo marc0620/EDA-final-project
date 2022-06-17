@@ -140,10 +140,11 @@ int main(int argc, char* argv[]) {
     D0inst[3]->posX = 5; D0inst[3]->posY = 10;
     D0inst[4]->posX = 3; D0inst[4]->posY = 11;
     */
-    SimulatedAnnealing SAD0(netNum);
+    char mode = 'a';
+    SimulatedAnnealing SAD0(netNum, mode);
     SAD0.entireProcedure((*dies[0]), Lib);
     Terminalplacement TP;
-    TP.Terminal_Placing(D0inst, &nets, &Lib, dies[0]);
+    TP.Terminal_Placing(dies[0]->instances, &nets, &Lib, dies[0]);
 }
 
 //  remember to set die.instnum after gets the partition!!

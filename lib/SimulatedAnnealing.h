@@ -12,6 +12,7 @@ using namespace std;
 class SimulatedAnnealing {
    public:
     int temperature = 50000;
+    char mode;
     vector<Net> nets;
     double previousCost, currentCost;
     vector<int> rowOccupied;
@@ -19,7 +20,7 @@ class SimulatedAnnealing {
     SimulatedAnnealing() {
         srand(time(NULL));
     };
-    SimulatedAnnealing(int nn);
+    SimulatedAnnealing(int nn, char m);
 
     void pinsLookUp(Inst* a, LibCell& b);
     void randomLayer(Die& die, vector<vector<LibCell>>& lib);
@@ -29,6 +30,6 @@ class SimulatedAnnealing {
     char accept();
     void instMove(Die& die);
     void pinPlacer(Inst* inst);
-    // void recover(Die& die);                                        // todo
+    void recover(Die& die);                                        // todo
     void entireProcedure(Die& die, vector<vector<LibCell>>& lib);  // todo
 };
