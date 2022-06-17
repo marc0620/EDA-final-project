@@ -135,6 +135,13 @@ int main(int argc, char* argv[]) {
     dies[1]->instances = D1inst;
     dies[1]->instNum = D1inst.size();
 
+    /*
+    D0inst[0]->posX = 13; D0inst[0]->posY = 20;
+    D0inst[1]->posX = 10; D0inst[1]->posY = 6;
+    D0inst[2]->posX = 13; D0inst[2]->posY = 7;
+    D0inst[3]->posX = 5; D0inst[3]->posY = 10;
+    D0inst[4]->posX = 3; D0inst[4]->posY = 11;
+    */
     Terminalplacement TP;
     TP.Terminal_Placing(D0inst, &nets, &Lib, dies[0]);
 }

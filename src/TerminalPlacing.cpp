@@ -78,10 +78,10 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
     int diemidy = (die0->lowerLeftY + die0->higherRightY)/2;
     int gridside = sqrt(terminalcount)+1;
     cout<<"gridside="<<gridside<<endl;
-    int minposx = diemidx - ceil((double)gridside*Terminal::eqwidth()/2) + Terminal::spacing;
+    int minposx = diemidx - ceil((double)gridside*Terminal::eqwidth()/2) + Terminal::spacing/2;
     cout<<"minposx="<<minposx<<endl;
     int minspotx;    
-    int minposy = diemidy - ceil((double)gridside*Terminal::eqheight()/2) + Terminal::spacing;
+    int minposy = diemidy - ceil((double)gridside*Terminal::eqheight()/2) + Terminal::spacing/2;
     cout<<"minposy="<<minposy<<endl;
     int minspoty;
     int maxposx = diemidx + ceil((double)gridside*Terminal::eqwidth()/2) - Terminal::spacing/2 - Terminal::width;
@@ -92,7 +92,6 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
     int maxspoty;
     
     int degree = 1;
-    cout<<terminalcount;
     for(int i=0;i<terminalcount;i++)
     {
         if(i == degree*degree - degree)
@@ -143,8 +142,10 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
                 if(needterminal[j])
                 {
                     if(SQN[j].getmidx() + SQN[j].getmidy() > max && terminals[j].posX == -1)
-                    max = SQN[j].getmidx() + SQN[j].getmidy();
-                    selected = j;
+                    {
+                        max = SQN[j].getmidx() + SQN[j].getmidy();
+                        selected = j;
+                    }
                 }
             }
             terminals[selected].posX = maxspotx;
@@ -153,7 +154,6 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
     }
     //terminal initialized
     
-    cout<<terminalcount<<endl;
     for(int i=0;i<(*nets).size();i++)
     {
         if(needterminal[i])
@@ -162,24 +162,23 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
         }
     }
 
-    int llxlimit = die0->lowerLeftX + ceil((double)(Terminal::spacing/2));
-    int llylimit = die0->lowerLeftY + ceil((double)(Terminal::spacing/2));
-    int hrxlimit = die0->higherRightX - ceil((double)(Terminal::spacing/2));
-    int hrylimit = die0->higherRightY - ceil((double)(Terminal::spacing/2));
+    int llxlimit = die0->lowerLeftX + Terminal::spacing;
+    int llylimit = die0->lowerLeftY + Terminal::spacing;
+    int hrxlimit = die0->higherRightX - Terminal::spacing;
+    int hrylimit = die0->higherRightY - Terminal::spacing;
 
-    int end[((*nets).size())];
+    vector<int> end((*nets).size()), endx((*nets).size()), endy((*nets).size());
     
     for(int i=0;i<(*nets).size();i++)
     {
         if(needterminal[i])
-        end[i] = 0;
+        end[i] = endx[i] = endy[i] = 0;
         else
-        end[i] = 1;
-        
+        end[i] = endx[i] = endy[i] = 1;
     }
     
     
-    while(1<0)
+    while(true)
     {
         int signal=1;
         for(int i=0;i<(*nets).size();i++)
@@ -191,15 +190,43 @@ void Terminalplacement::Terminal_Placing(vector<Inst*> D0inst, vector<list<Inst*
 
         for(int i=0;i<(*nets).size();i++)
         {
-            if(needterminal[i])
+            if(needterminal[i] && end[i] == 0)
             {
-                if((terminals[i].posX + Terminal::width/2 - diemidx)*(SQN[i].getmidx() - (terminals[i].posX + Terminal::width/2)) > 0)
+                if((terminals[i].posX + Terminal::width/2 - diemidx) * (SQN[i].getmidx() - (terminals[i].posX + Terminal::width/2)) > 0)
                 {
-                    terminals[i].posX += (SQN[i].getmidx() - (terminals[i].posX))/abs((SQN[i].getmidx() - (terminals[i].posX)));
+                    cout<<"terminal "<<i+1<<" x-moveable."<<endl;
+                    int newx = terminals[i].posX + (terminals[i].posX + Terminal::width/2 - diemidx)/abs(terminals[i].posX + Terminal::width/2 - diemidx);
+                    if(newx > llxlimit && newx + Terminal::width < hrxlimit)
+                    terminals[i].posX += (terminals[i].posX + Terminal::width/2 - diemidx)/abs(terminals[i].posX + Terminal::width/2 - diemidx);
+                    else
+                    endx[i] = 1;
                 }
+                else
+                endx[i] = 1;
+                if((terminals[i].posY + Terminal::height/2 - diemidy) * (SQN[i].getmidy() - (terminals[i].posY + Terminal::height/2)) > 0)
+                {
+                    cout<<"terminal "<<i+1<<" y-moveable."<<endl;
+                    int newy = terminals[i].posY + (terminals[i].posY + Terminal::height/2 - diemidy)/abs(terminals[i].posY + Terminal::height/2 - diemidy);
+                    if(newy > llylimit && newy + Terminal::height < hrylimit)
+                    terminals[i].posY += (terminals[i].posY + Terminal::height/2 - diemidy)/abs(terminals[i].posY + Terminal::height/2 - diemidy);
+                    else
+                    endy[i] = 1;
+                }
+                else
+                endy[i] = 1;
+
+                if(endx[i] == endy[i] == 1)
+                end[i] = 1;
             }
         }
-        break;
+    }
+
+    for(int i=0;i<(*nets).size();i++)
+    {
+        if(needterminal[i])
+        {
+            cout<<"terminal for net "<<i+1<<" is placed at ("<<terminals[i].posX<<","<<terminals[i].posY<<")"<<endl;
+        }
     }
     
     
