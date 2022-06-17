@@ -25,7 +25,13 @@ SimulatedAnnealing::SimulatedAnnealing(int nn, char m) {
     srand(time(NULL));
     mode = m;
 }
-
+SimulatedAnnealing::SimulatedAnnealing(int nn, char m, vector<Terminal>* t, vector<bool>* need) {
+    nets.resize(nn);
+    srand(time(NULL));
+    mode = m;
+    terminals = t;
+    needTerminal = need;
+}
 void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
     int r = 0, c = 0;
     rowOccupied.resize(die.rowNum);
@@ -60,7 +66,19 @@ void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
                 if (n != -1)
                     nets[die.instances[i]->pins[j].net].pins.push_back((&(die.instances[i]->pins[j])));
             }
+
             r += 1;
+        }
+        if (mode == 'b') {
+            for (int j = 0; j < terminals->size(); j++) {
+                if (needTerminal) {
+                    Pin* t = new Pin();
+                    t->net = j;
+                    t->posX = (*terminals)[j].posX;
+                    t->posY = (*terminals)[j].posY;
+                    nets[j].pins.push_back(t);
+                }
+            }
         }
     }
     previousCost = Cost(die);
@@ -265,7 +283,7 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
     }
     recover(die);
     for (int i = 0; i < die.instNum; i++) {
-        cout << "(inst" << i + 1 << ", posX:" << die.instances[i]->posX << ", posY:" << die.instances[i]->posY << " )" << endl;
+        cout << "(inst" << die.instances[i]->name + 1 << ", posX:" << die.instances[i]->posX << ", posY:" << die.instances[i]->posY << " )" << endl;
     }
     cout << "COST" << Cost(die) << endl;
 }
