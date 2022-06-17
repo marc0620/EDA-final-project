@@ -58,8 +58,8 @@ int main(int argc, char* argv[]) {
                 int posX, posY;
                 fin >> JUNK >> JUNK >> posX >> posY;
                 (*pins)[k].name = k;
-                (*pins)[k].posX = posX;
-                (*pins)[k].posY = posY;
+                (*pins)[k].relativePosX = posX;
+                (*pins)[k].relativePosY = posY;
             }
             Lib[i][j].pins = pins;
         }
@@ -115,11 +115,9 @@ int main(int argc, char* argv[]) {
     //     }
     // }
 
-
     vector<Inst*> D0inst, D1inst;
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
 
-    
     showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
@@ -142,9 +140,10 @@ int main(int argc, char* argv[]) {
     D0inst[3]->posX = 5; D0inst[3]->posY = 10;
     D0inst[4]->posX = 3; D0inst[4]->posY = 11;
     */
+    SimulatedAnnealing SAD0(netNum);
+    SAD0.entireProcedure((*dies[0]), Lib);
     Terminalplacement TP;
     TP.Terminal_Placing(D0inst, &nets, &Lib, dies[0]);
 }
-// SimulatedAnnealing SAD0(netNum);
-// SAD0.entireProcedure((*dies[0]), Lib);
+
 //  remember to set die.instnum after gets the partition!!

@@ -28,7 +28,7 @@ class SimulatedAnnealing {
     int Cost(Die& die);
     char accept();
     void instMove(Die& die);
-    void pinPlacer(Inst& inst);
+    void pinPlacer(Inst* inst);
     // void recover(Die& die);                                        // todo
     void entireProcedure(Die& die, vector<vector<LibCell>>& lib);  // todo
 };
