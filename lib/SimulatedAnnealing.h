@@ -11,7 +11,7 @@
 using namespace std;
 class SimulatedAnnealing {
    public:
-    int temperature = 50000;
+    int temperature = 100000;
     char mode;
     vector<Net> nets;
     double previousCost, currentCost;
@@ -19,6 +19,8 @@ class SimulatedAnnealing {
     vector<vector<Inst*>> currentBest;
     vector<Terminal>* terminals;
     vector<bool>* needTerminal;
+    static bool instCompare(Inst* i1, Inst* i2);
+
     SimulatedAnnealing() {
         srand(time(NULL));
     };

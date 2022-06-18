@@ -1,11 +1,11 @@
 #include "../lib/Objects.h"
 
-void showcostreduction(vector<Inst> instances) {
+void showcostreduction(vector<Inst>& instances) {
     for (int i = 0; i < instances.size(); i++)
         cout << "cost reduction of Inst " << i + 1 << " = " << instances[i].cr << endl;
 }
 
-int getcurrentcost(vector<Inst> instances) {
+int getcurrentcost(vector<Inst>& instances) {
     float totalcost = 0;
     for (int i = 0; i < instances.size(); i++) {
         for (list<pair<Inst*, float> >::iterator itr = instances[i].adjlist.begin(); itr != instances[i].adjlist.end(); itr++) {
@@ -16,7 +16,7 @@ int getcurrentcost(vector<Inst> instances) {
     return (int)totalcost / 2;
 }
 
-void showcurrentcost(vector<Inst> instances) {
+void showcurrentcost(vector<Inst>& instances) {
     float totalcost = 0;
     for (int i = 0; i < instances.size(); i++) {
         for (list<pair<Inst*, float> >::iterator itr = instances[i].adjlist.begin(); itr != instances[i].adjlist.end(); itr++) {
@@ -27,7 +27,7 @@ void showcurrentcost(vector<Inst> instances) {
     cout << "current total cost =  " << (int)totalcost / 2 << endl;
 }
 
-void showadjlist(vector<Inst> instances) {
+void showadjlist(vector<Inst>& instances) {
     for (int i = 0; i < instances.size(); i++) {
         cout << "neighbors of Inst " << i + 1 << ":" << endl;
         for (list<pair<Inst*, float> >::iterator itr = instances[i].adjlist.begin(); itr != instances[i].adjlist.end(); itr++) {
@@ -76,7 +76,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die
         }
     }
     // adjacency list doned
-     showadjlist(instances);
+    // showadjlist(instances);
 
     // partition start
     int D0area = 0;
