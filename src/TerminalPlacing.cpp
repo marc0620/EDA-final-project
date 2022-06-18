@@ -91,31 +91,22 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
     //cout<<"maxposy="<<maxposy<<endl;
     int maxspoty;
     
-    int degree = 1;
-    //cout<<terminalcount;
-    for(int i=0;i<terminalcount;i++)
+    int degreemin = 1;
+    int degreemax = 1;
+    vector<Terminal*> forneiborhood(terminalcount);
+    for(int i=0;i<2;i++)
     {
-        if(i == degree*degree - degree)
+        if(i%2 == 0)
         {
-            minspotx = minposx + (degree - 1)*Terminal::eqwidth();
+            minspotx = minposx + (degreemin - 1)*Terminal::eqwidth();
             minspoty = minposy;
-        }
-        else if(i == degree*degree - degree + 1)
-        {
-            maxspotx = maxposx - (degree - 1)*Terminal::eqwidth();
-            maxspoty = maxposy;
-            degree++;
-        }
-        else if(i%2==0)
-        {
-            minspotx -= Terminal::eqwidth();
-            minspoty += Terminal::eqheight();
         }
         else
         {
-            maxspotx += Terminal::eqwidth();
-            maxspoty -= Terminal::eqheight();
+            maxspotx = maxposx - (degreemax - 1)*Terminal::eqwidth();
+            maxspoty = maxposy;
         }
+        
 
         int selected;
         if(i%2 == 0)
@@ -131,6 +122,90 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
                         selected = j;
                     }
                 }
+            }
+            forneiborhood[i] = &(*terminals)[selected];
+            (*terminals)[selected].posX = minspotx;
+            (*terminals)[selected].posY = minspoty;
+        }
+        else
+        {
+            int max = -1*sentinel;
+            for(int j=0;j<(*nets).size();j++)
+            {
+                if((*needterminal)[j])
+                {
+                    if(SQN[j].getmidx() + SQN[j].getmidy() > max && (*terminals)[j].posX == -1)
+                    {
+                        max = SQN[j].getmidx() + SQN[j].getmidy();
+                        selected = j;
+                    }
+                }
+            }
+            forneiborhood[i] = &(*terminals)[selected];
+            (*terminals)[selected].posX = maxspotx;
+            (*terminals)[selected].posY = maxspoty;
+        }
+    }
+    for(int i=2;i<terminalcount;i++)
+    {
+        if(i%2 == 0)
+        {
+            if(i == degreemin*degreemin + degreemin )
+            {
+                degreemin++;
+                minspotx = minposx + (degreemin - 1)*Terminal::eqwidth();
+                minspoty = minposy;
+                
+            }
+            else
+            {
+                minspotx -= Terminal::eqwidth();
+                minspoty += Terminal::eqheight();
+            }
+        }
+        else
+        {
+            if(i == degreemax*degreemax + degreemax + 1)
+            {
+                degreemax++;
+                maxspotx = maxposx - (degreemax - 1)*Terminal::eqwidth();
+                maxspoty = maxposy;
+                
+            }
+            else
+            {
+                maxspotx += Terminal::eqwidth();
+                maxspoty -= Terminal::eqheight();
+            }
+            
+        }
+        
+
+        int selected;
+        if(i%2 == 0)
+        {
+            int min = sentinel;
+            for(int j=0;j<(*nets).size();j++)
+            {
+                if((*needterminal)[j])
+                {
+                    if(SQN[j].getmidx() + SQN[j].getmidy() < min && (*terminals)[j].posX == -1)
+                    {
+                        min = SQN[j].getmidx() + SQN[j].getmidy();
+                        selected = j;
+                    }
+                }
+            }
+            forneiborhood[i] = &(*terminals)[selected];
+            if(i != degreemin*degreemin - degreemin) //i不在底
+            {
+                forneiborhood[i]->down = forneiborhood[i-2*degreemin];
+                forneiborhood[i-2*degreemin]->up = forneiborhood[i];
+            }
+            if(i != degreemin*degreemin + degreemin - 2) //i不在左
+            {
+                forneiborhood[i]->left = forneiborhood[i-2*degreemin + 2];
+                forneiborhood[i-2*degreemin+2]->right = forneiborhood[i];
             }
             (*terminals)[selected].posX = minspotx;
             (*terminals)[selected].posY = minspoty;
@@ -149,6 +224,17 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
                     }
                 }
             }
+            forneiborhood[i] = &(*terminals)[selected];
+            if(i != degreemax*degreemax - degreemax + 1) //i不在頂
+            {
+                forneiborhood[i]->up = forneiborhood[i-2*degreemax];
+                forneiborhood[i-2*degreemax]->down = forneiborhood[i];
+            }
+            if(i != degreemax*degreemax + degreemax - 1) //i不在右
+            {
+                forneiborhood[i]->right = forneiborhood[i-2*degreemax + 2];
+                forneiborhood[i-2*degreemax+2]->left = forneiborhood[i];
+            }
             (*terminals)[selected].posX = maxspotx;
             (*terminals)[selected].posY = maxspoty;
         }
@@ -156,20 +242,21 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
     
     //terminal initialized
     
-    //for(int i=0;i<(*nets).size();i++)
-    //{
-    //    if(needterminal[i])
-    //    {
-    //        cout<<"terminal for net "<<i+1<<" is placed at ("<<terminals[i].posX<<","<<terminals[i].posY<<")"<<endl;
-    //    }
-    //}
+    for(int i=0;i<(*nets).size();i++)
+    {
+        if((*needterminal)[i])
+        {
+            cout<<"terminal for net "<<i+1<<" is placed at ("<<(*terminals)[i].posX<<","<<(*terminals)[i].posY<<")"<<endl;
+        }
+    }
 
     int llxlimit = die0->lowerLeftX + Terminal::spacing;
     int llylimit = die0->lowerLeftY + Terminal::spacing;
     int hrxlimit = die0->higherRightX - Terminal::spacing;
     int hrylimit = die0->higherRightY - Terminal::spacing;
 
-    vector<int> end((*nets).size()), endx((*nets).size()), endy((*nets).size());
+    vector<int> end((*nets).size());
+    vector<double> endx((*nets).size()), endy((*nets).size());
     
     for(int i=0;i<(*nets).size();i++)
     {
@@ -194,30 +281,64 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         {
             if((*needterminal)[i] && end[i] == 0)
             {
-                if(endx[i] == 0 && ((*terminals)[i].posX + Terminal::width/2 - diemidx) * (SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2)) > 0)
+                if(endx[i] < 1 && ((*terminals)[i].posX + Terminal::width/2 - diemidx) * (SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2)) > 0)
                 {
-                    //cout<<"terminal "<<i+1<<" x-moveable."<<endl;
+                    cout<<"terminal "<<i+1<<" x-moveable."<<endl;
                     int newx = (*terminals)[i].posX + ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    if((*terminals)[i].left != NULL && (*terminals)[i].right != NULL)
+                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx > (*terminals)[i].left->posX + Terminal::eqwidth()) && (newx < (*terminals)[i].right->posX - Terminal::eqwidth()))
+                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    else
+                    endx[i] += 0.01;
+                    else if((*terminals)[i].left == NULL && (*terminals)[i].right != NULL)
+                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx < (*terminals)[i].right->posX - Terminal::eqwidth()))
+                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    else
+                    endx[i] += 0.1;
+                    else if((*terminals)[i].left != NULL && (*terminals)[i].right == NULL)
+                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx > (*terminals)[i].left->posX + Terminal::eqwidth()))
+                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    else
+                    endx[i] += 0.1;
+                    else
                     if(newx > llxlimit && newx + Terminal::width < hrxlimit)
                     (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
                     else
-                    endx[i] = 1;
+                    endx[i] += 1;
                 }
                 else
-                endx[i] = 1;
-                if((endy[i] == 0 && (*terminals)[i].posY + Terminal::height/2 - diemidy) * (SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2)) > 0)
+                endx[i] += 1;
+
+
+                if(endy[i] < 1 && ((*terminals)[i].posY + Terminal::height/2 - diemidy) * (SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2)) > 0)
                 {
-                    //cout<<"terminal "<<i+1<<" y-moveable."<<endl;
+                    cout<<"terminal "<<i+1<<" x-moveable."<<endl;
                     int newy = (*terminals)[i].posY + ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    if((*terminals)[i].down != NULL && (*terminals)[i].up != NULL)
+                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy > (*terminals)[i].down->posY + Terminal::eqheight()) && (newy < (*terminals)[i].up->posY - Terminal::eqheight()))
+                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    else
+                    endy[i] += 0.01;
+                    else if((*terminals)[i].down == NULL && (*terminals)[i].up != NULL)
+                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy < (*terminals)[i].up->posY - Terminal::eqheight()))
+                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    else
+                    endy[i] += 0.1;
+                    else if((*terminals)[i].down != NULL && (*terminals)[i].up == NULL)
+                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy > (*terminals)[i].down->posY + Terminal::eqheight()))
+                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    else
+                    endy[i] += 0.1;
+                    else
                     if(newy > llylimit && newy + Terminal::height < hrylimit)
                     (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
                     else
-                    endy[i] = 1;
+                    endy[i] += 1;
                 }
                 else
-                endy[i] = 1;
+                endy[i] += 1;
 
-                if(endx[i] == endy[i] == 1)
+                if(endx[i] >= 1 && endy[i] >= 1)
                 end[i] = 1;
             }
         }
