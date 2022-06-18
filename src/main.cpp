@@ -143,20 +143,21 @@ int main(int argc, char* argv[]) {
     char mode = 'a';
     SimulatedAnnealing SAD0(netNum, mode);
     SAD0.entireProcedure((*dies[0]), Lib);
-    
+
     vector<Terminal> terminals(nets.size());
     vector<bool> needterminal(nets.size());
-    
+
     Terminalplacement TP;
     TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
 
-    for(int i=0;i<nets.size();i++)
-    {
-        if((needterminal)[i])
-        {
-            cout<<"terminal for net "<<i+1<<" is placed at ("<<(terminals)[i].posX<<","<<(terminals)[i].posY<<")"<<endl;
+    for (int i = 0; i < nets.size(); i++) {
+        if ((needterminal)[i]) {
+            cout << "terminal for net " << i + 1 << " is placed at (" << (terminals)[i].posX << "," << (terminals)[i].posY << ")" << endl;
         }
     }
+    mode = 'b';
+    SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
+    SAD1.entireProcedure((*dies[1]), Lib);
 }
 
 //  remember to set die.instnum after gets the partition!!

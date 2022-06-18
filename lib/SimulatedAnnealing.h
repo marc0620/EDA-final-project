@@ -17,11 +17,13 @@ class SimulatedAnnealing {
     double previousCost, currentCost;
     vector<int> rowOccupied;
     vector<vector<Inst*>> currentBest;
+    vector<Terminal>* terminals;
+    vector<bool>* needTerminal;
     SimulatedAnnealing() {
         srand(time(NULL));
     };
     SimulatedAnnealing(int nn, char m);
-
+    SimulatedAnnealing(int nn, char m, vector<Terminal>* t, vector<bool>* need);
     void pinsLookUp(Inst* a, LibCell& b);
     void randomLayer(Die& die, vector<vector<LibCell>>& lib);
 
