@@ -54,7 +54,6 @@ bool Terminalplacement::occupy(bool* occupied, int num)
 
 void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<bool>* needterminal, vector<Inst*> D0inst, vector<list<Inst*>> *nets, vector<vector<LibCell> > *Lib, Die* die0)
 {
-    
     int terminalcount = 0;
     //vector<bool> needterminal((*nets).size());
     for(int i=0;i<(*nets).size();i++)
@@ -316,20 +315,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         if(overlap(i, (*terminals)[i].posX, (*terminals)[i].posY, terminals, needterminal,die0))
         cout<<"error"<<" for "<<i+1<<endl;
     }
-    
-    
-    
     //terminal initialized
-    
-    
-    
-    
-    
 
-    int llxlimit = die0->lowerLeftX + Terminal::spacing;
-    int llylimit = die0->lowerLeftY + Terminal::spacing;
-    int hrxlimit = die0->higherRightX - Terminal::spacing;
-    int hrylimit = die0->higherRightY - Terminal::spacing;
 
     vector<int> end((*nets).size());
     vector<double> endx((*nets).size()), endy((*nets).size());
@@ -341,9 +328,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
         end[i] = endx[i] = endy[i] = 1;
     }
-    double penalty = (double)0.1/terminalcount;
-    
-    
+    double penalty = (double)1/terminalcount;   //覺得太久就調這邊(把1調大)
+
     while(true)
     {
         int signal=1;
@@ -404,7 +390,12 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             cout<<"terminal for net "<<i+1<<" is placed at ("<<(*terminals)[i].posX<<","<<(*terminals)[i].posY<<")"<<endl;
         }
     }
-
+    for(int i=0;i<(*nets).size();i++)
+    {
+        if((*needterminal)[i])
+        if(overlap(i, (*terminals)[i].posX, (*terminals)[i].posY, terminals, needterminal,die0))
+        cout<<"error"<<" for "<<i+1<<endl;
+    }
 
    delete occupied;
 }
