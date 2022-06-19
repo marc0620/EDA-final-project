@@ -289,7 +289,7 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
     int count = 0;
     while (temperature >= 10) {
         count++;
-        temperature *= 0.9;
+        temperature *= 0.95;
         instMove(die);
         // cout << "grid: " << endl;
         // for (int j = 0; j < die.rowNum; j++) {
@@ -307,16 +307,6 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
         // }
         // cout << count << endl;
     }
-    cout << "COST" << Cost(die) << endl;
-    for (int j = 0; j < die.rowNum; j++) {
-        for (int i = 0; i < die.colNum; i++) {
-            die.grid[i][j] = currentBest[i][j];
-            pinPlacer(die.grid[i][j]);
-            cout << ((die.grid[i][j] != nullptr) ? die.grid[i][j]->name : -1) << " ";
-        }
-        cout << endl;
-    }
-    cout << "COST" << Cost(die) << "cc" << currentCost << endl;
     // cout << "final cost c:" << currentCost << " ffi" << Cost(die) << endl;
     recover(die);
     // for (int i = 0; i < die.instNum; i++) {

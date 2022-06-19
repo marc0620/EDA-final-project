@@ -11,7 +11,7 @@
 using namespace std;
 class SimulatedAnnealing {
    public:
-    int temperature = 100000;
+    int temperature = 1000000;
     char mode;
     vector<Net> nets;
     double previousCost, currentCost;

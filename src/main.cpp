@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 
     vector<Inst*> D0inst, D1inst;
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
-    
+
     showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
@@ -128,26 +128,28 @@ int main(int argc, char* argv[]) {
         }
         dies[i]->gridStartX = (dies[i]->higherRightX - dies[i]->gridWidth * dies[i]->colNum) / 2;
     }
-    
     dies[0]->instances = D0inst;
     dies[0]->instNum = D0inst.size();
     dies[1]->instances = D1inst;
     dies[1]->instNum = D1inst.size();
     char mode = 'a';
-    
     SimulatedAnnealing SAD0(netNum, mode);
     SAD0.entireProcedure((*dies[0]), Lib);
-    
-    
+
     vector<Terminal> terminals(nets.size());
     vector<bool> needterminal(nets.size());
+
     Terminalplacement TP;
     TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
-    
+
+    for (int i = 0; i < nets.size(); i++) {
+        if ((needterminal)[i]) {
+            cout << "terminal for net " << i + 1 << " is placed at (" << (terminals)[i].posX << "," << (terminals)[i].posY << ")" << endl;
+        }
+    }
     mode = 'b';
-    SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
-    SAD1.entireProcedure((*dies[1]), Lib);
-    
+    // SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
+    // SAD1.entireProcedure((*dies[1]), Lib);
 }
 
 //  remember to set die.instnum after gets the partition!!
