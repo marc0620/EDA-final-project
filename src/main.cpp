@@ -14,8 +14,8 @@
 #endif  // !SA
 using namespace std;
 
-void Partition(vector<Inst>*, vector<vector<LibCell>>, Die*, Die*, vector<list<Inst*>>, vector<Inst*>*, vector<Inst*>*);
-void showtwodie(vector<Inst*>, vector<Inst*>);
+void Partition(vector<Inst>*, vector<vector<LibCell>>&, Die*, Die*, vector<list<Inst*>>&, vector<Inst*>*, vector<Inst*>*);
+void showtwodie(vector<Inst*>&, vector<Inst*>&);
 
 int main(int argc, char* argv[]) {
     // inputting

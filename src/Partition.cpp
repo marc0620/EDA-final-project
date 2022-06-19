@@ -36,7 +36,7 @@ void showadjlist(vector<Inst>& instances) {
     }
 }
 
-void showtwodie(vector<Inst*> D0, vector<Inst*> D1) {
+void showtwodie(vector<Inst*>& D0, vector<Inst*>& D1) {
     cout << "Instances on D0: " << endl;
     for (int i = 0; i < D0.size(); i++)
         cout << "Inst " << D0[i]->name + 1;// << endl;
@@ -46,7 +46,7 @@ void showtwodie(vector<Inst*> D0, vector<Inst*> D1) {
         cout << "Inst " << D1[i]->name + 1;// << endl;
 }
 
-void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die* die1, vector<list<Inst*> > nets, vector<Inst*>* D0inst, vector<Inst*>* D1inst) {
+void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Die* die1, vector<list<Inst*> >& nets, vector<Inst*>* D0inst, vector<Inst*>* D1inst) {
     // pair<Inst*,list<pair<Inst*,int> > > Adjlist[instances.size()];
     // adjacency list define
     vector<Inst> instances = *insts;
