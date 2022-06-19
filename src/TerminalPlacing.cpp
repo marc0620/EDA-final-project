@@ -15,8 +15,46 @@ void Terminalplacement::showterminalneed(vector<bool> needterminal)
     }
 }
 
+bool Terminalplacement::overlap(int index, int newx, int newy ,vector<Terminal>* terminals, vector<bool>* needterminal,Die* die0)
+{
+    bool overlap = false;
+    for(int i=0;i<index;i++)
+    {
+        if((*needterminal)[i])
+        if(abs(newx - (*terminals)[i].posX) < Terminal::eqwidth() && abs(newy - (*terminals)[i].posY) < Terminal::eqwidth())
+        overlap = true;
+    }
+    for(int i=index+1;i<terminals->size();i++)
+    {
+        if((*needterminal)[i])
+        if(abs(newx - (*terminals)[i].posX) < Terminal::eqwidth() && abs(newy - (*terminals)[i].posY) < Terminal::eqheight())
+        overlap = true;
+    }
+    if(abs(newx - die0->lowerLeftX) < Terminal::spacing)
+    overlap = true;
+    if(abs(newx - die0->higherRightX) < Terminal::spacing)
+    overlap = true;
+    if(abs(newy - die0->lowerLeftY) < Terminal::spacing)
+    overlap = true;
+    if(abs(newy - die0->higherRightY) < Terminal::spacing)
+    overlap = true;
+
+    return overlap;
+}
+
+bool Terminalplacement::occupy(bool* occupied, int num)
+{
+    bool a = true;
+    for(int i=0;i<num+1;i++)
+    if(!occupied[i])
+    a = false;
+
+    return a;
+}
+
 void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<bool>* needterminal, vector<Inst*> D0inst, vector<list<Inst*>> *nets, vector<vector<LibCell> > *Lib, Die* die0)
 {
+    
     int terminalcount = 0;
     //vector<bool> needterminal((*nets).size());
     for(int i=0;i<(*nets).size();i++)
@@ -35,8 +73,9 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             itr++;
         }
     }
+    //terminal needed checked
     //showterminalneed(needterminal);
-
+    
     vector<SquareofNet> SQN((*nets).size()); 
     for(int i=0;i<D0inst.size();i++)
     {
@@ -60,6 +99,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         }
     }
 
+    //square of net computed
+    
     for(int i=0;i<(*nets).size();i++)
     {
         if((*needterminal)[i])
@@ -71,113 +112,60 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
         cout<<"net "<<i+1<<" do not need a terminal"<<endl;
     }
+    
 
     //vector<Terminal> terminals((*nets).size());    /////too  large for large case
 
     int diemidx = (die0->lowerLeftX + die0->higherRightX)/2;
     int diemidy = (die0->lowerLeftY + die0->higherRightY)/2;
     int gridside = sqrt(terminalcount)+1;
-    //cout<<"gridside="<<gridside<<endl;
-    int minposx = diemidx - ceil((double)gridside*Terminal::eqwidth()/2) + Terminal::spacing/2;
-    //cout<<"minposx="<<minposx<<endl;
-    int minspotx;    
-    int minposy = diemidy - ceil((double)gridside*Terminal::eqheight()/2) + Terminal::spacing/2;
-    //cout<<"minposy="<<minposy<<endl;
-    int minspoty;
-    int maxposx = diemidx + ceil((double)gridside*Terminal::eqwidth()/2) - Terminal::spacing/2 - Terminal::width;
-    //cout<<"maxposx="<<maxposx<<endl;
-    int maxspotx;
-    int maxposy = diemidy + ceil((double)gridside*Terminal::eqheight()/2) - Terminal::spacing/2 - Terminal::height;
-    //cout<<"maxposy="<<maxposy<<endl;
-    int maxspoty;
+    cout<<"gridside="<<gridside<<endl;
+    int minposx = diemidx - ceil((double)0.5*gridside*Terminal::eqwidth()) + Terminal::spacing/2;
+    cout<<"minposx="<<minposx<<endl;
+    //int minspotx;    
+    int minposy = diemidy - ceil((double)0.5*gridside*Terminal::eqheight()) + Terminal::spacing/2;
+    cout<<"minposy="<<minposy<<endl;
+    //int minspoty;
+    int maxposx = diemidx + ceil((double)0.5*gridside*Terminal::eqwidth()) - Terminal::spacing/2 - Terminal::width;
+    cout<<"maxposx="<<maxposx<<endl;
+    //int maxspotx;
+    int maxposy = diemidy + ceil((double)0.5*gridside*Terminal::eqheight()) - Terminal::spacing/2 - Terminal::height;
+    cout<<"maxposy="<<maxposy<<endl;
+    //int maxspoty;
     
-    int degreemin = 1;
-    int degreemax = 1;
-    vector<Terminal*> forneiborhood(terminalcount);
-    for(int i=0;i<2;i++)
+    
+    bool** occupied;
+    occupied = new bool* [2*gridside - 1];
+    for(int i=0;i<gridside;i++)
     {
-        if(i%2 == 0)
-        {
-            minspotx = minposx + (degreemin - 1)*Terminal::eqwidth();
-            minspoty = minposy;
-        }
-        else
-        {
-            maxspotx = maxposx - (degreemax - 1)*Terminal::eqwidth();
-            maxspoty = maxposy;
-        }
-        
-
-        int selected;
-        if(i%2 == 0)
-        {
-            int min = sentinel;
-            for(int j=0;j<(*nets).size();j++)
-            {
-                if((*needterminal)[j])
-                {
-                    if(SQN[j].getmidx() + SQN[j].getmidy() < min && (*terminals)[j].posX == -1)
-                    {
-                        min = SQN[j].getmidx() + SQN[j].getmidy();
-                        selected = j;
-                    }
-                }
-            }
-            forneiborhood[i] = &(*terminals)[selected];
-            (*terminals)[selected].posX = minspotx;
-            (*terminals)[selected].posY = minspoty;
-        }
-        else
-        {
-            int max = -1*sentinel;
-            for(int j=0;j<(*nets).size();j++)
-            {
-                if((*needterminal)[j])
-                {
-                    if(SQN[j].getmidx() + SQN[j].getmidy() > max && (*terminals)[j].posX == -1)
-                    {
-                        max = SQN[j].getmidx() + SQN[j].getmidy();
-                        selected = j;
-                    }
-                }
-            }
-            forneiborhood[i] = &(*terminals)[selected];
-            (*terminals)[selected].posX = maxspotx;
-            (*terminals)[selected].posY = maxspoty;
-        }
+        occupied[i] = new bool [i+1];
+        for(int j=0;j<i+1;j++)
+        occupied[i][j] = false;
     }
-    for(int i=2;i<terminalcount;i++)
+    for(int i=gridside;i<2*gridside-1;i++)
+    {
+        occupied[i] = new bool [2*gridside - i - 1];
+        for(int j=0;j<2*gridside - i - 1;j++)
+        occupied[i][j] = false;
+    }
+
+    cout<<"terminals count = "<<terminalcount<<endl;
+    
+    int degreemin = 0;
+    int degreemax = 0;
+    
+    
+    for(int i=0;i<gridside*gridside - gridside;i++)
     {
         if(i%2 == 0)
         {
-            if(i == degreemin*degreemin + degreemin )
-            {
-                degreemin++;
-                minspotx = minposx + (degreemin - 1)*Terminal::eqwidth();
-                minspoty = minposy;
-                
-            }
-            else
-            {
-                minspotx -= Terminal::eqwidth();
-                minspoty += Terminal::eqheight();
-            }
+            if(i == degreemin*degreemin + 3*degreemin + 2)
+            degreemin++;
         }
         else
         {
-            if(i == degreemax*degreemax + degreemax + 1)
-            {
-                degreemax++;
-                maxspotx = maxposx - (degreemax - 1)*Terminal::eqwidth();
-                maxspoty = maxposy;
-                
-            }
-            else
-            {
-                maxspotx += Terminal::eqwidth();
-                maxspoty -= Terminal::eqheight();
-            }
-            
+            if(i == degreemax*degreemax + 3*degreemax + 3)
+            degreemax++;
         }
         
 
@@ -196,19 +184,35 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
                     }
                 }
             }
-            forneiborhood[i] = &(*terminals)[selected];
-            if(i != degreemin*degreemin - degreemin) //i不在底
+ 
+            int gridselect;
+            for(int j=0;j<degreemin+1;j++)
             {
-                forneiborhood[i]->down = forneiborhood[i-2*degreemin];
-                forneiborhood[i-2*degreemin]->up = forneiborhood[i];
+                if(!occupied[degreemin][j])
+                {
+                    gridselect = j;
+                    break;
+                }
             }
-            if(i != degreemin*degreemin + degreemin - 2) //i不在左
+            int minspotx = minposx + degreemin*Terminal::eqwidth() - gridselect*Terminal::eqwidth();
+            int minspoty = minposy + gridselect*Terminal::eqheight();
+            for(int j=gridselect+1;j<degreemin+1;j++)
             {
-                forneiborhood[i]->left = forneiborhood[i-2*degreemin + 2];
-                forneiborhood[i-2*degreemin+2]->right = forneiborhood[i];
+                if(!occupied[degreemin][j])
+                {
+                    if(abs(SQN[selected].getmidx() - (minspotx - (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (minspoty + (j-gridselect)*Terminal::eqheight() )) <
+                    abs(SQN[selected].getmidx() - (minspotx)) + abs(SQN[selected].getmidy() - (minspoty)))
+                    {
+                        minspotx -= (j-gridselect)*Terminal::eqwidth();
+                        minspoty += (j-gridselect)*Terminal::eqheight();
+                        gridselect = j;
+                    }
+                }
             }
+            occupied[degreemin][gridselect] = true;
             (*terminals)[selected].posX = minspotx;
             (*terminals)[selected].posY = minspoty;
+            
         }
        else
        {
@@ -224,21 +228,96 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
                     }
                 }
             }
-            forneiborhood[i] = &(*terminals)[selected];
-            if(i != degreemax*degreemax - degreemax + 1) //i不在頂
+            
+            int gridselect;
+            for(int j=0;j<degreemax+1;j++)
             {
-                forneiborhood[i]->up = forneiborhood[i-2*degreemax];
-                forneiborhood[i-2*degreemax]->down = forneiborhood[i];
+                if(!occupied[2*gridside - 2 - degreemax][j])
+                {
+                    gridselect = j;
+                    break;
+                }
             }
-            if(i != degreemax*degreemax + degreemax - 1) //i不在右
+            int maxspotx = maxposx - degreemax*Terminal::eqwidth() + gridselect*Terminal::eqwidth();
+            int maxspoty = maxposy - gridselect*Terminal::eqheight();
+            for(int j=gridselect+1;j<degreemax+1;j++)
             {
-                forneiborhood[i]->right = forneiborhood[i-2*degreemax + 2];
-                forneiborhood[i-2*degreemax+2]->left = forneiborhood[i];
+                if(!occupied[2*gridside - 2 - degreemax][j])
+                {
+                    if(abs(SQN[selected].getmidx() - (maxspotx + (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (maxspoty - (j-gridselect)*Terminal::eqheight() )) <
+                    abs(SQN[selected].getmidx() - (maxspotx)) + abs(SQN[selected].getmidy() - (maxspoty)))
+                    {
+                        maxspotx += (j-gridselect)*Terminal::eqwidth();
+                        maxspoty -= (j-gridselect)*Terminal::eqheight();
+                        gridselect = j;
+                    }
+                }
             }
+            occupied[2*gridside - 2 - degreemax][gridselect] = true;
             (*terminals)[selected].posX = maxspotx;
             (*terminals)[selected].posY = maxspoty;
+            
         }
     }
+
+    degreemin++;
+    for(int i=gridside*gridside - gridside;i<terminalcount;i++)
+    {
+        int selected;
+        int min = sentinel;
+        for(int j=0;j<(*nets).size();j++)
+        {
+            if((*needterminal)[j])
+            {
+                if(SQN[j].getmidx() + SQN[j].getmidy() < min && (*terminals)[j].posX == -1)
+                {
+                    min = SQN[j].getmidx() + SQN[j].getmidy();
+                    selected = j;
+                }
+            }
+        }
+ 
+        int gridselect;
+        for(int j=0;j<degreemin+1;j++)
+        {
+            if(!occupied[degreemin][j])
+            {
+                    gridselect = j;
+                    break;
+            }
+        }
+        int minspotx = minposx + degreemin*Terminal::eqwidth() - gridselect*Terminal::eqwidth();
+        int minspoty = minposy + gridselect*Terminal::eqheight();
+        for(int j=gridselect+1;j<degreemin+1;j++)
+        {
+            if(!occupied[degreemin][j])
+            {
+                if(abs(SQN[selected].getmidx() - (minspotx - (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (minspoty + (j-gridselect)*Terminal::eqheight() )) <
+                abs(SQN[selected].getmidx() - (minspotx)) + abs(SQN[selected].getmidy() - (minspoty)))
+                {
+                    minspotx -= (j-gridselect)*Terminal::eqwidth();
+                    minspoty += (j-gridselect)*Terminal::eqheight();
+                    gridselect = j;
+                }
+            }
+        }
+        occupied[degreemin][gridselect] = true;
+        (*terminals)[selected].posX = minspotx;
+        (*terminals)[selected].posY = minspoty;
+    }
+
+    //////////////terminal initialized
+
+    
+
+    for(int i=0;i<(*nets).size();i++)
+    {
+        if((*needterminal)[i])
+        if(overlap(i, (*terminals)[i].posX, (*terminals)[i].posY, terminals, needterminal,die0))
+        cout<<"error"<<" for "<<i+1<<endl;
+    }
+    
+    
     
     //terminal initialized
     
@@ -249,6 +328,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             cout<<"terminal for net "<<i+1<<" is placed at ("<<(*terminals)[i].posX<<","<<(*terminals)[i].posY<<")"<<endl;
         }
     }
+    
+    
 
     int llxlimit = die0->lowerLeftX + Terminal::spacing;
     int llylimit = die0->lowerLeftY + Terminal::spacing;
@@ -266,6 +347,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         end[i] = endx[i] = endy[i] = 1;
     }
     
+    /*
     
     while(true)
     {
@@ -343,92 +425,9 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             }
         }
     }
-
-    
-    
-    
-    /* 報完再想
-    int min = sentinel;
-    for(int j=0;j<(*nets).size();j++)
-    {
-        if(needterminal[j])
-        {
-            if(SQN[j].getmidx + SQN[j].getmidy < min)
-            {
-                min = SQN[j].getmidx + SQN[j].getmidy;
-                selected = j;
-            }
-        }
-    }
-    terminals[selected].posX = minspotx;
-    terminals[selected].posY = minspoty;
-    minspotx += Terminal::eqwidth();
-    minspoty += Terminal::eqheight();
-
-
-    
-    int max = -1*sentinel;
-    for(int j=0;j<nets.size();j++)
-    {
-        if(needterminal[j])
-        {
-            if(SQN[j].getmidx + SQN[j].getmidy > min)
-            max = SQN[j].getmidx + SQN[j].getmidy;
-            selected = j;
-        }
-    }
-    terminals[selected].posX = maxspotx;
-    terminals[selected].posY = maxspoty;
-    minspotx += Terminal::eqwidth();
-    minspoty += Terminal::eqheight();
-
-    for(int i=0;i<terminalcount-2;i++)
-    {
-        int selected;
-        if(i%2 == 0)
-        {
-            int min = sentinel;
-            for(int j=0;j<nets.size();j++)
-            {
-                if(needterminal[j])
-                {
-                    if(SQN[j].getmidx + SQN[j].getmidy < min)
-                    {
-                        min = SQN[j].getmidx + SQN[j].getmidy;
-                        selected = j;
-                    }
-                }
-            }
-            terminals[selected].posX = minspotx;
-            terminals[selected].posY = minspoty;
-            while(terminals[selected].posX > minposx + spacing && terminal[selected].posY > minposy +spacing )
-            {
-                if((SQN[selected].getmidx-minspotx))
-            }
-            minspotx += Terminal::eqwidth();
-            minspoty += Terminal::eqheight();
-        }
-       else
-       {
-            int max = -1*sentinel;
-            for(int j=0;j<nets.size();j++)
-            {
-                if(needterminal[j])
-                {
-                    if(SQN[j].getmidx + SQN[j].getmidy > min)
-                    max = SQN[j].getmidx + SQN[j].getmidy;
-                    selected = j;
-                }
-            }
-            terminals[selected].posX = maxspotx;
-            terminals[selected].posY = maxspoty;
-            minspotx += Terminal::eqwidth();
-            minspoty += Terminal::eqheight();
-        }
-    }
     */
 
 
-
+   delete occupied;
 }
 

@@ -21,7 +21,7 @@ class Terminal {
     static int width, height, spacing;
     int posX, posY;
     Terminal  *left, *right, *up, *down;
-    Terminal(){posX=-1; posY=-1; left = right = up = down = NULL;}
+    Terminal(){posX=-1; posY=-1;}
 
     static void setWidth(int i);
     static void setHeight(int i);

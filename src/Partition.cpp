@@ -76,7 +76,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die
         }
     }
     // adjacency list doned
-     showadjlist(instances);
+    // showadjlist(instances);
 
     // partition start
     int D0area = 0;

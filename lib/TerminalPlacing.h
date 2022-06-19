@@ -17,6 +17,8 @@ class Terminalplacement
 {
     public:
      Terminalplacement(){}
+     bool overlap(int, int, int, vector<Terminal>*, vector<bool>*, Die*);
+     bool occupy(bool*, int);
      void showterminalneed(vector<bool>);
      void Terminal_Placing(vector<Terminal>*, vector<bool>*, vector<Inst*>, vector<list<Inst*>>*, vector<vector<LibCell> >*, Die* );
 };
