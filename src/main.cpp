@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 
     vector<Inst*> D0inst, D1inst;
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
-
+    
     showtwodie(D0inst, D1inst);
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
