@@ -200,8 +200,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             {
                 if(!occupied[degreemin][j])
                 {
-                    if(abs(SQN[selected].getmidx() - (minspotx - (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (minspoty + (j-gridselect)*Terminal::eqheight() )) <
-                    abs(SQN[selected].getmidx() - (minspotx)) + abs(SQN[selected].getmidy() - (minspoty)))
+                    if(abs(SQN[selected].getmidx() - (minspotx + Terminal::width/2 - (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (minspoty + Terminal::height/2 + (j-gridselect)*Terminal::eqheight() )) <
+                    abs(SQN[selected].getmidx() - (minspotx + Terminal::width/2)) + abs(SQN[selected].getmidy() - (minspoty + Terminal::height/2)))
                     {
                         minspotx -= (j-gridselect)*Terminal::eqwidth();
                         minspoty += (j-gridselect)*Terminal::eqheight();
@@ -244,8 +244,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             {
                 if(!occupied[2*gridside - 2 - degreemax][j])
                 {
-                    if(abs(SQN[selected].getmidx() - (maxspotx + (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (maxspoty - (j-gridselect)*Terminal::eqheight() )) <
-                    abs(SQN[selected].getmidx() - (maxspotx)) + abs(SQN[selected].getmidy() - (maxspoty)))
+                    if(abs(SQN[selected].getmidx() - (maxspotx + Terminal::width/2 + (j-gridselect)*Terminal::eqwidth())) + abs(SQN[selected].getmidy() - (maxspoty + Terminal::height/2 - (j-gridselect)*Terminal::eqheight() )) <
+                    abs(SQN[selected].getmidx() - (maxspotx + Terminal::width/2)) + abs(SQN[selected].getmidy() - (maxspoty + Terminal::height/2)))
                     {
                         maxspotx += (j-gridselect)*Terminal::eqwidth();
                         maxspoty -= (j-gridselect)*Terminal::eqheight();
@@ -321,13 +321,8 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
     
     //terminal initialized
     
-    for(int i=0;i<(*nets).size();i++)
-    {
-        if((*needterminal)[i])
-        {
-            cout<<"terminal for net "<<i+1<<" is placed at ("<<(*terminals)[i].posX<<","<<(*terminals)[i].posY<<")"<<endl;
-        }
-    }
+    
+    
     
     
 
@@ -346,86 +341,69 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
         end[i] = endx[i] = endy[i] = 1;
     }
+    double penalty = (double)0.1/terminalcount;
     
-    /*
     
     while(true)
     {
         int signal=1;
         for(int i=0;i<(*nets).size();i++)
         {
+            if(endx[i] >= 1 && endy[i] >= 1)
+            end[i] = 1;
             signal *= end[i];
         }
-        if(signal == 1)
+        if(signal >= 1)
         break;
 
         for(int i=0;i<(*nets).size();i++)
         {
-            if((*needterminal)[i] && end[i] == 0)
+            if((*needterminal)[i] && end[i] < 1)
             {
-                if(endx[i] < 1 && ((*terminals)[i].posX + Terminal::width/2 - diemidx) * (SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2)) > 0)
+                if(abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2 + 1)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2)))
                 {
-                    cout<<"terminal "<<i+1<<" x-moveable."<<endl;
-                    int newx = (*terminals)[i].posX + ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
-                    if((*terminals)[i].left != NULL && (*terminals)[i].right != NULL)
-                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx > (*terminals)[i].left->posX + Terminal::eqwidth()) && (newx < (*terminals)[i].right->posX - Terminal::eqwidth()))
-                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    if(overlap(i, (*terminals)[i].posX + 1, (*terminals)[i].posY, terminals, needterminal, die0))
+                    endx[i] += penalty;
                     else
-                    endx[i] += 0.01;
-                    else if((*terminals)[i].left == NULL && (*terminals)[i].right != NULL)
-                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx < (*terminals)[i].right->posX - Terminal::eqwidth()))
-                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
+                    (*terminals)[i].posX ++;
+                }
+                else if(abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2 - 1)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width/2)))
+                {
+                    if(overlap(i, (*terminals)[i].posX - 1, (*terminals)[i].posY, terminals, needterminal, die0))
+                    endx[i] += penalty;
                     else
-                    endx[i] += 0.1;
-                    else if((*terminals)[i].left != NULL && (*terminals)[i].right == NULL)
-                    if(newx > llxlimit && newx + Terminal::width < hrxlimit && (newx > (*terminals)[i].left->posX + Terminal::eqwidth()))
-                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
-                    else
-                    endx[i] += 0.1;
-                    else
-                    if(newx > llxlimit && newx + Terminal::width < hrxlimit)
-                    (*terminals)[i].posX += ((*terminals)[i].posX + Terminal::width/2 - diemidx)/abs((*terminals)[i].posX + Terminal::width/2 - diemidx);
-                    else
-                    endx[i] += 1;
+                    (*terminals)[i].posX --;
                 }
                 else
-                endx[i] += 1;
+                endx[i] = 1;
 
-
-                if(endy[i] < 1 && ((*terminals)[i].posY + Terminal::height/2 - diemidy) * (SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2)) > 0)
+                if(abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2 + 1)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2)))
                 {
-                    cout<<"terminal "<<i+1<<" x-moveable."<<endl;
-                    int newy = (*terminals)[i].posY + ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
-                    if((*terminals)[i].down != NULL && (*terminals)[i].up != NULL)
-                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy > (*terminals)[i].down->posY + Terminal::eqheight()) && (newy < (*terminals)[i].up->posY - Terminal::eqheight()))
-                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    if(overlap(i, (*terminals)[i].posX, (*terminals)[i].posY + 1, terminals, needterminal, die0))
+                    endy[i] += penalty;
                     else
-                    endy[i] += 0.01;
-                    else if((*terminals)[i].down == NULL && (*terminals)[i].up != NULL)
-                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy < (*terminals)[i].up->posY - Terminal::eqheight()))
-                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
+                    (*terminals)[i].posY ++;
+                }
+                else if(abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2 - 1)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height/2)))
+                {
+                    if(overlap(i, (*terminals)[i].posX, (*terminals)[i].posY - 1, terminals, needterminal, die0))
+                    endy[i] += penalty;
                     else
-                    endy[i] += 0.1;
-                    else if((*terminals)[i].down != NULL && (*terminals)[i].up == NULL)
-                    if(newy > llylimit && newy + Terminal::height < hrylimit && (newy > (*terminals)[i].down->posY + Terminal::eqheight()))
-                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
-                    else
-                    endy[i] += 0.1;
-                    else
-                    if(newy > llylimit && newy + Terminal::height < hrylimit)
-                    (*terminals)[i].posY += ((*terminals)[i].posY + Terminal::height/2 - diemidy)/abs((*terminals)[i].posY + Terminal::height/2 - diemidy);
-                    else
-                    endy[i] += 1;
+                    (*terminals)[i].posY --;
                 }
                 else
-                endy[i] += 1;
-
-                if(endx[i] >= 1 && endy[i] >= 1)
-                end[i] = 1;
+                endy[i] = 1;
             }
         }
     }
-    */
+    
+    for(int i=0;i<(*nets).size();i++)
+    {
+        if((*needterminal)[i])
+        {
+            cout<<"terminal for net "<<i+1<<" is placed at ("<<(*terminals)[i].posX<<","<<(*terminals)[i].posY<<")"<<endl;
+        }
+    }
 
 
    delete occupied;

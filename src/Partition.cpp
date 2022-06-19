@@ -39,11 +39,11 @@ void showadjlist(vector<Inst>& instances) {
 void showtwodie(vector<Inst*> D0, vector<Inst*> D1) {
     cout << "Instances on D0: " << endl;
     for (int i = 0; i < D0.size(); i++)
-        cout << "Inst " << D0[i]->name + 1 << endl;
+        cout << "Inst " << D0[i]->name + 1;// << endl;
 
     cout << "Instances on D1: " << endl;
     for (int i = 0; i < D1.size(); i++)
-        cout << "Inst " << D1[i]->name + 1 << endl;
+        cout << "Inst " << D1[i]->name + 1;// << endl;
 }
 
 void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die* die1, vector<list<Inst*> > nets, vector<Inst*>* D0inst, vector<Inst*>* D1inst) {
@@ -115,7 +115,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die
     int idealtotalcost = idealterminalnum * 10 * 0.8;                                         //調參
     int currentcost = getcurrentcost(instances);
 
-    const int CRsize = 100;
+    const int CRsize = nets.size()*10;
     list<Inst*> CRD0[2 * CRsize + 1], CRD1[2 * CRsize + 1];
     for (int i = 0; i < instances.size(); i++)  // store data to apply FM partition
     {
@@ -124,6 +124,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die
         else
             CRD1[instances[i].cr + CRsize].push_back(&instances[i]);
     }
+    
 
     while (count < instances.size()) {
         // cout<<"test4   index= "<<currentcost<<" - "<<idealtotalcost<<endl;
@@ -222,6 +223,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> > Lib, Die* die0, Die
         // showcostreduction(instances);
         count++;
     }
+    
 
     // for(int i=0;i<instances.size();i++)
     // cout<<"inst "<<i+1<<" is on d"<<instances[i].atdie<<endl;
