@@ -119,6 +119,7 @@ int main(int argc, char* argv[]) {
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
 
     showtwodie(D0inst, D1inst);
+    
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
         dies[i]->grid.resize(dies[i]->colNum);
@@ -142,16 +143,10 @@ int main(int argc, char* argv[]) {
     Terminalplacement TP;
     TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
 
-    /*
-    for (int i = 0; i < nets.size(); i++) {
-        if ((needterminal)[i]) {
-            cout << "terminal for net " << i + 1 << " is placed at (" << (terminals)[i].posX << "," << (terminals)[i].posY << ")" << endl;
-        }
-    }
-    */
     mode = 'b';
     SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
     SAD1.entireProcedure((*dies[1]), Lib);
+    
 }
 
 //  remember to set die.instnum after gets the partition!!

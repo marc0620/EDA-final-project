@@ -99,7 +99,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
     }
 
     //square of net computed
-    
+    /*
     for(int i=0;i<(*nets).size();i++)
     {
         if((*needterminal)[i])
@@ -111,6 +111,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
         cout<<"net "<<i+1<<" do not need a terminal"<<endl;
     }
+    */
     
 
     //vector<Terminal> terminals((*nets).size());    /////too  large for large case

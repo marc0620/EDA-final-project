@@ -79,21 +79,23 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Di
     // showadjlist(instances);
 
     // partition start
-    int D0area = 0;
-    int D1area = 0;
+    long long D0area = 0;
+    long long D1area = 0;
     for (int i = 0; i < instances.size(); i++) {
         if (D0area * 100 / die0->maxUtil <= D1area * 100 / die1->maxUtil) {
             instances[i].atdie = 0;
             // D0inst.push_back(&instances[i]);
             //(Adjlist[i]).first = &instances[i];
-            D0area += Lib[instances[i].atdie][instances[i].type].getarea();
+            D0area += Lib[die0->tech][instances[i].type].getarea();
         } else {
             instances[i].atdie = 1;
             // D1inst.push_back(&instances[i]);
             //(Adjlist[i]).first = &instances[i];
-            D1area += Lib[instances[i].atdie][instances[i].type].getarea();
+            D1area += Lib[die1->tech][instances[i].type].getarea();
         }
     }
+    cout<<"D0 used area = "<<D0area<<endl;
+    cout<<"D1 used area = "<<D1area<<endl;
     // showcurrentcost(instances);
     // showtwodie(D0inst,D1inst);
 
@@ -163,8 +165,8 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Di
                         CRD1[(*itr).first->cr + CRsize].push_front((*itr).first);
                     }
                 }
-                D0area -= Lib[0][CRD0[index].front()->type].getarea();
-                D1area += Lib[1][CRD0[index].front()->type].getarea();
+                D0area -= Lib[die0->tech][CRD0[index].front()->type].getarea();
+                D1area += Lib[die1->tech][CRD0[index].front()->type].getarea();
                 // currentcost -= CRD0[index].front()->cr;
                 CRD0[index].front()->atdie ^= 1;
                 CRD0[index].front()->cr *= -1;
