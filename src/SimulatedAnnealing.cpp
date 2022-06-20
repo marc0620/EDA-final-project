@@ -32,14 +32,32 @@ SimulatedAnnealing::SimulatedAnnealing(int nn, char m, vector<Terminal>* t, vect
     nets.resize(nn);
     srand(time(NULL));
     mode = m;
-    terminals = t;
-    needTerminal = need;
+    // terminals = t;
+    // needTerminal = need;
 }
 void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
+    die.gridWidth = 0;
+    for (int i = 0; i < die.instNum; i++) {
+        pinsLookUp(die.instances[i], (lib[die.tech][die.instances[i]->type]));
+        die.gridWidth += die.instances[i]->sizeX;
+    }
+
+    cout << "instnum" << die.instNum << endl;
+    die.gridWidth /= die.instNum;
+    cout << "instnum" << die.gridWidth << endl;
+    die.colNum = die.higherRightX / die.gridWidth;
+    die.grid.resize(die.colNum);
+    for (int j = 0; j < die.colNum; j++) {
+        die.grid[j].resize(die.rowNum);
+        fill(die.grid[j].begin(), die.grid[j].end(), nullptr);
+    }
+    die.gridStartX = (die.higherRightX - die.gridWidth * die.colNum) / 2;
     int r = 0, c = 0, count = 0;
     rowOccupied.resize(die.rowNum);
 
     fill(rowOccupied.begin(), rowOccupied.end(), 0);
+    cout << '\n'
+         << die.colNum << " " << die.rowNum << " " << die.instances.size();
     if (die.instances.size() > die.colNum * die.rowNum) {
         cout << "error insts too much";
         return;
@@ -48,9 +66,7 @@ void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
         for (int i = 0; i < die.instNum; i++) {
             currentBest[i].resize(die.rowNum);
         }
-        for (int i = 0; i < die.instances.size(); i++) {
-            pinsLookUp(die.instances[i], (lib[die.tech][die.instances[i]->type]));
-        }
+
         vector<bool> placed(die.instances.size());
         fill(placed.begin(), placed.end(), false);
         sort(die.instances.begin(), die.instances.end(), instCompare);
@@ -287,28 +303,28 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
     randomLayer(die, lib);
 
     int count = 0;
-    while (temperature >= 10) {
-        count++;
-        temperature *= 0.95;
-        instMove(die);
-        // cout << "grid: " << endl;
-        // for (int j = 0; j < die.rowNum; j++) {
-        //     for (int i = 0; i < die.colNum; i++) {
-        //         cout << ((die.grid[i][j] != nullptr) ? die.grid[i][j]->name : -1) << " ";
-        //     }
-        //     cout << endl;
-        // }
-        // cout << "current best:" << endl;
-        // for (int j = 0; j < die.rowNum; j++) {
-        //     for (int i = 0; i < die.colNum; i++) {
-        //         cout << ((currentBest[i][j] != nullptr) ? currentBest[i][j]->name : -1) << " ";
-        //     }
-        //     cout << endl;
-        // }
-        // cout << count << endl;
-    }
-    // cout << "final cost c:" << currentCost << " ffi" << Cost(die) << endl;
-    recover(die);
+    // while (temperature >= 10) {
+    //     count++;
+    //     temperature *= 0.95;
+    //     instMove(die);
+    //     // cout << "grid: " << endl;
+    //     // for (int j = 0; j < die.rowNum; j++) {
+    //     //     for (int i = 0; i < die.colNum; i++) {
+    //     //         cout << ((die.grid[i][j] != nullptr) ? die.grid[i][j]->name : -1) << " ";
+    //     //     }
+    //     //     cout << endl;
+    //     // }
+    //     // cout << "current best:" << endl;
+    //     // for (int j = 0; j < die.rowNum; j++) {
+    //     //     for (int i = 0; i < die.colNum; i++) {
+    //     //         cout << ((currentBest[i][j] != nullptr) ? currentBest[i][j]->name : -1) << " ";
+    //     //     }
+    //     //     cout << endl;
+    //     // }
+    //     // cout << count << endl;
+    // }
+    // // cout << "final cost c:" << currentCost << " ffi" << Cost(die) << endl;
+    // recover(die);
     // for (int i = 0; i < die.instNum; i++) {
     //     cout << "(inst" << die.instances[i]->name + 1 << ", posX:" << die.instances[i]->posX << ", posY:" << die.instances[i]->posY << " )" << endl;
     // }

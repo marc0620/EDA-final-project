@@ -87,13 +87,8 @@ int main(int argc, char* argv[]) {
         instances[i].pinNum = Lib[0][type - 1].getpinNum();
         instances[i].pins.resize(instances[i].pinNum);
         instances[i].name = i;
-        avgWidth[0] += Lib[0][type - 1].getsizeX();
-        avgWidth[1] += Lib[1][type - 1].getsizeX();
     }
-    avgWidth[0] /= instanceNum;
-    avgWidth[1] /= instanceNum;
-    dies[0]->gridWidth = avgWidth[0] + 1;
-    dies[1]->gridWidth = avgWidth[1] + 1;
+
     // Nets Input
     fin >> JUNK >> netNum;
     netPinNum.resize(netNum);
@@ -114,11 +109,11 @@ int main(int argc, char* argv[]) {
     //         cout << instances[i].pins[j].net << " " << instances[i].pins[j].name << '\n';
     //     }
     // }
-
     vector<Inst*> D0inst, D1inst;
     Partition(&instances, Lib, dies[0], dies[1], nets, &D0inst, &D1inst);
 
     showtwodie(D0inst, D1inst);
+<<<<<<< HEAD
     
     for (int i = 0; i < 2; i++) {
         dies[i]->colNum = dies[i]->higherRightX / dies[i]->gridWidth;
@@ -129,14 +124,19 @@ int main(int argc, char* argv[]) {
         }
         dies[i]->gridStartX = (dies[i]->higherRightX - dies[i]->gridWidth * dies[i]->colNum) / 2;
     }
+=======
+
+>>>>>>> 38d2dab (SA modified)
     dies[0]->instances = D0inst;
     dies[0]->instNum = D0inst.size();
     dies[1]->instances = D1inst;
     dies[1]->instNum = D1inst.size();
+    cout << "D0" << D0inst.size() << " D1" << D1inst.size() << endl;
     char mode = 'a';
-    SimulatedAnnealing SAD0(netNum, mode);
-    SAD0.entireProcedure((*dies[0]), Lib);
+    // SimulatedAnnealing SAD0(netNum, mode);
+    // SAD0.entireProcedure((*dies[0]), Lib);
 
+<<<<<<< HEAD
     vector<Terminal> terminals(nets.size());
     vector<bool> needterminal(nets.size());
 
@@ -145,6 +145,9 @@ int main(int argc, char* argv[]) {
 
     mode = 'b';
     SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
+=======
+    SimulatedAnnealing SAD1(netNum, mode);
+>>>>>>> 38d2dab (SA modified)
     SAD1.entireProcedure((*dies[1]), Lib);
     
 }
