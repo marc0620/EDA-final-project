@@ -262,7 +262,12 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
             end[i] = endx[i] = endy[i] = 1;
     }
-    double penalty = (double)1 / terminalcount;  //覺得太久就調這邊(把1調大)
+    double penalty = (double)1 / gridside;  //覺得太久就調這邊(把1調大)
+    int remainx = (die0->higherRightX-die0->lowerLeftX)-gridside*Terminal::eqwidth();
+    int remainy = (die0->higherRightY-die0->lowerLeftY)-gridside*Terminal::eqheight();
+    int stepx = 0.5*remainx/gridside;
+    int stepy = 0.5*remainy/gridside;
+    int count = 0;
     while (true) {
         int signal = 1;
         for (int i = 0; i < (*nets).size(); i++) {
@@ -274,32 +279,41 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             break;
         for (int i = 0; i < (*nets).size(); i++) {
             if ((*needterminal)[i] && end[i] < 1) {
-                if (abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2 + 1)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2))) {
-                    if (overlap(i, (*terminals)[i].posX + 1, (*terminals)[i].posY, terminals, needterminal, die0))
+                if (abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2 + stepx)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2))) {
+                    if (overlap(i, (*terminals)[i].posX + stepx, (*terminals)[i].posY, terminals, needterminal, die0))
                         endx[i] += penalty;
                     else
-                        (*terminals)[i].posX++;
-                } else if (abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2 - 1)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2))) {
-                    if (overlap(i, (*terminals)[i].posX - 1, (*terminals)[i].posY, terminals, needterminal, die0))
+                        (*terminals)[i].posX += stepx;
+                } else if (abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2 - stepx)) < abs(SQN[i].getmidx() - ((*terminals)[i].posX + Terminal::width / 2))) {
+                    if (overlap(i, (*terminals)[i].posX - stepx, (*terminals)[i].posY, terminals, needterminal, die0))
                         endx[i] += penalty;
                     else
-                        (*terminals)[i].posX--;
+                        (*terminals)[i].posX -= stepx;
                 } else
                     endx[i] = 1;
-                if (abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2 + 1)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2))) {
-                    if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY + 1, terminals, needterminal, die0))
+                if (abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2 + stepy)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2))) {
+                    if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY + stepy, terminals, needterminal, die0))
                         endy[i] += penalty;
                     else
-                        (*terminals)[i].posY++;
-                } else if (abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2 - 1)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2))) {
-                    if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY - 1, terminals, needterminal, die0))
+                        (*terminals)[i].posY += stepy;
+                } else if (abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2 - stepy)) < abs(SQN[i].getmidy() - ((*terminals)[i].posY + Terminal::height / 2))) {
+                    if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY - stepy, terminals, needterminal, die0))
                         endy[i] += penalty;
                     else
-                        (*terminals)[i].posY--;
+                        (*terminals)[i].posY -= stepy;
                 } else
                     endy[i] = 1;
             }
         }
+        if(count % (int)(log(remainx/gridside)/log(2)) == (int)(log(remainx/gridside)/log(2)) - 1)
+        {
+            if(stepx > 1)
+            stepx /= 2;
+            if(stepy > 1)
+            stepy /= 2;
+        }
+
+        count++;
     }
 
     for (int i = 0; i < (*nets).size(); i++) {

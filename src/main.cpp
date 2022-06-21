@@ -125,12 +125,12 @@ int main(int argc, char* argv[]) {
     vector<Terminal> terminals(nets.size());
     vector<bool> needterminal(nets.size());
 
-    // Terminalplacement TP;
-    // TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
+    Terminalplacement TP;
+    TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
 
-    // mode = 'b';
-    // SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
-    // SAD1.entireProcedure((*dies[1]), Lib);
+     mode = 'b';
+    SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
+    SAD1.entireProcedure((*dies[1]), Lib);
 }
 
 //  remember to set die.instnum after gets the partition!!
