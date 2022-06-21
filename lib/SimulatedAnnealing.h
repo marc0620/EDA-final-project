@@ -11,10 +11,11 @@
 using namespace std;
 class SimulatedAnnealing {
    public:
-    int temperature = 1000000;
+    double temperature = 1000000.0;
     char mode;
+    int cCount = 0;
     vector<Net> nets;
-    double previousCost, currentCost;
+    double previousCost, currentCost, bestCost;
     vector<int> rowOccupied;
     vector<vector<Inst*>> currentBest;
     vector<Terminal>* terminals;
@@ -29,8 +30,8 @@ class SimulatedAnnealing {
     void pinsLookUp(Inst* a, LibCell& b);
     void randomLayer(Die& die, vector<vector<LibCell>>& lib);
 
-    int hpwlCalculator(vector<Net>& nets);
-    int Cost(Die& die);
+    double hpwlCalculator(vector<Net>& nets);
+    double Cost(Die& die);
     char accept();
     void instMove(Die& die);
     void pinPlacer(Inst* inst);

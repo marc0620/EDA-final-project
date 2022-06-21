@@ -84,7 +84,6 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         }
     }
 
-<<<<<<< HEAD
     // square of net computed
     /*
     for(int i=0;i<(*nets).size();i++)
@@ -100,37 +99,24 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
     }
     */
 
-    == == == =
-                 // square of net computed
-
-        for (int i = 0; i < (*nets).size(); i++) {
-        if ((*needterminal)[i]) {
-            cout << "square of net " << i + 1 << ":" << endl;
-            cout << "llx: " << SQN[i].llx << "  lly: " << SQN[i].lly << endl;
-            cout << "hrx: " << SQN[i].hrx << "  hry: " << SQN[i].hry << endl;
-        } else
-            cout << "net " << i + 1 << " do not need a terminal" << endl;
-    }
->>>>>>> 38d2dab (SA modified)
-
     // vector<Terminal> terminals((*nets).size());    /////too  large for large case
 
     int diemidx = (die0->lowerLeftX + die0->higherRightX) / 2;
     int diemidy = (die0->lowerLeftY + die0->higherRightY) / 2;
     int gridside = sqrt(terminalcount) + 1;
-    cout << "gridside=" << gridside << endl;
+    // cout << "gridside=" << gridside << endl;
     int minposx = diemidx - ceil((double)0.5 * gridside * Terminal::eqwidth()) + Terminal::spacing / 2;
-    cout << "minposx=" << minposx << endl;
-    // int minspotx;
+    // cout << "minposx=" << minposx << endl;
+    //  int minspotx;
     int minposy = diemidy - ceil((double)0.5 * gridside * Terminal::eqheight()) + Terminal::spacing / 2;
-    cout << "minposy=" << minposy << endl;
-    // int minspoty;
+    // cout << "minposy=" << minposy << endl;
+    //  int minspoty;
     int maxposx = diemidx + ceil((double)0.5 * gridside * Terminal::eqwidth()) - Terminal::spacing / 2 - Terminal::width;
-    cout << "maxposx=" << maxposx << endl;
-    // int maxspotx;
+    // cout << "maxposx=" << maxposx << endl;
+    //  int maxspotx;
     int maxposy = diemidy + ceil((double)0.5 * gridside * Terminal::eqheight()) - Terminal::spacing / 2 - Terminal::height;
-    cout << "maxposy=" << maxposy << endl;
-    // int maxspoty;
+    // cout << "maxposy=" << maxposy << endl;
+    //  int maxspoty;
 
     bool** occupied;
     occupied = new bool*[2 * gridside - 1];
@@ -145,7 +131,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             occupied[i][j] = false;
     }
 
-    cout << "terminals count = " << terminalcount << endl;
+    // cout << "terminals count = " << terminalcount << endl;
 
     int degreemin = 0;
     int degreemax = 0;
@@ -286,7 +272,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
             end[i] = endx[i] = endy[i] = 1;
     }
-    double penalty = (double)10 / terminalcount;  //覺得太久就調這邊(把1調大)
+    double penalty = (double)50 / gridside;  //覺得太久就調這邊(把1調大)
 
     while (true) {
         int signal = 1;
@@ -329,11 +315,11 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         }
     }
 
-    for (int i = 0; i < (*nets).size(); i++) {
-        if ((*needterminal)[i]) {
-            cout << "terminal for net " << i + 1 << " is placed at (" << (*terminals)[i].posX << "," << (*terminals)[i].posY << ")" << endl;
-        }
-    }
+    // for (int i = 0; i < (*nets).size(); i++) {
+    //     if ((*needterminal)[i]) {
+    //         cout << "terminal for net " << i + 1 << " is placed at (" << (*terminals)[i].posX << "," << (*terminals)[i].posY << ")" << endl;
+    //     }
+    // }
     for (int i = 0; i < (*nets).size(); i++) {
         if ((*needterminal)[i])
             if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY, terminals, needterminal, die0))
