@@ -109,7 +109,6 @@ void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
     }
 
     previousCost = Cost(die);
-    bestCost = previousCost;
     cout << "Init_Cost" << previousCost << endl;
 }
 
@@ -195,9 +194,8 @@ void SimulatedAnnealing::instMove(Die& die) {
         currentCost = Cost(die);
     // cout << "sum out" << endl;
     // cout << " acc " << accept() << endl;
-    cout << "previosCost " << previousCost << " Cost " << Cost(die) << endl;
+    // cout << "prev" << previousCost << " curr" << currentCost << '\n';
     if (accept() == 'a') {
-        cout << 'a' << '\n';
         cCount = 0;
         if (swap) {
             die.grid[originX][originY] = die.grid[x][y];
@@ -206,7 +204,6 @@ void SimulatedAnnealing::instMove(Die& die) {
         }
         die.grid[x][y] = die.instances[i];
         // cout << "prev" << previousCost << " curr" << currentCost << '\n';
-        bestCost = currentCost;
         previousCost = currentCost;
         // cout << "previosCost " << previousCost << " Cost " << Cost(die) << endl;
 
@@ -216,96 +213,34 @@ void SimulatedAnnealing::instMove(Die& die) {
             }
         }
     } else if (accept() == 'b') {
-        cout << 'b' << '\n';
-        cCount += 1;
-        if (cCount >= 20) {
-            cCount = 0;
-            for (int j = 0; j < die.rowNum; j++) {
-                for (int i = 0; i < die.colNum; i++) {
-                    die.grid[i][j] = currentBest[i][j];
-                    if (die.grid[i][j] != nullptr) {
-                        die.grid[i][j]->gposX = i;
-                        die.grid[i][j]->gposY = j;
-                        die.grid[i][j]->posX = i * die.gridWidth;
-                        die.grid[i][j]->posY = j * die.gridHeight;
-                    }
-                    pinPlacer(die.grid[i][j]);
-                }
-            }
+        cCount = 0;
+        if (swap) {
+            die.grid[originX][originY] = die.grid[x][y];
+
         } else {
-            if (swap) {
-                die.grid[originX][originY] = die.grid[x][y];
-            } else {
-                die.grid[originX][originY] = nullptr;
-            }
-            die.grid[x][y] = die.instances[i];
-            // cout << "prev" << previousCost << " curr" << currentCost << '\n';
-            previousCost = currentCost;
+            die.grid[originX][originY] = nullptr;
         }
-
-    } else if (accept() == 'c') {
-        cout << 'c' << '\n';
-        cCount += 1;
-        if (cCount >= 20) {
-            cCount = 0;
-            for (int j = 0; j < die.rowNum; j++) {
-                for (int i = 0; i < die.colNum; i++) {
-                    die.grid[i][j] = currentBest[i][j];
-                    if (die.grid[i][j] != nullptr) {
-                        die.grid[i][j]->gposX = i;
-                        die.grid[i][j]->gposY = j;
-                        die.grid[i][j]->posX = i * die.gridWidth;
-                        die.grid[i][j]->posY = j * die.gridHeight;
-                    }
-                    pinPlacer(die.grid[i][j]);
-                }
-            }
-        } else {
-            if (swap) {
-                die.grid[originX][originY] = die.grid[x][y];
-
-            } else {
-                die.grid[originX][originY] = nullptr;
-            }
-            die.grid[x][y] = die.instances[i];
-        }
-
+        die.grid[x][y] = die.instances[i];
     } else {
-        cout << 'd' << '\n';
         cCount += 1;
-        if (cCount >= 20) {
-            cCount = 0;
-            for (int j = 0; j < die.rowNum; j++) {
-                for (int i = 0; i < die.colNum; i++) {
-                    die.grid[i][j] = currentBest[i][j];
-                    if (die.grid[i][j] != nullptr) {
-                        die.grid[i][j]->gposX = i;
-                        die.grid[i][j]->gposY = j;
-                        die.grid[i][j]->posX = i * die.gridWidth;
-                        die.grid[i][j]->posY = j * die.gridHeight;
-                    }
-                    pinPlacer(die.grid[i][j]);
-                }
-            }
-        } else {
-            if (swap) {
-                die.grid[x][y]->posX = x * die.gridWidth;
-                die.grid[x][y]->posY = y * die.gridHeight;
-                die.grid[x][y]->gposX = x;
-                die.grid[x][y]->gposY = y;
-                pinPlacer(die.grid[x][y]);
-                rowOccupied[originY] -= (die.grid[x][y]->sizeX);
-                rowOccupied[y] += (die.grid[x][y]->sizeX);
-            }
-            die.instances[i]->posX = originX * die.gridWidth;
-            die.instances[i]->posY = originY * die.gridHeight;
-            die.instances[i]->gposX = originX;
-            die.instances[i]->gposY = originY;
-            rowOccupied[originY] += (die.instances[i]->sizeX);
-            rowOccupied[y] -= (die.instances[i]->sizeX);
-            pinPlacer(die.instances[i]);
+        if (swap) {
+            die.grid[x][y]->posX = x * die.gridWidth;
+            die.grid[x][y]->posY = y * die.gridHeight;
+            die.grid[x][y]->gposX = x;
+            die.grid[x][y]->gposY = y;
+            pinPlacer(die.grid[x][y]);
+            rowOccupied[originY] -= (die.grid[x][y]->sizeX);
+            rowOccupied[y] += (die.grid[x][y]->sizeX);
         }
+        die.instances[i]->posX = originX * die.gridWidth;
+        die.instances[i]->posY = originY * die.gridHeight;
+        die.instances[i]->gposX = originX;
+        die.instances[i]->gposY = originY;
+        rowOccupied[originY] += (die.instances[i]->sizeX);
+        rowOccupied[y] -= (die.instances[i]->sizeX);
+        pinPlacer(die.instances[i]);
     }
+
     // for (int i = 0; i < die.instNum; i++) {
     //     cout << "inst" << i << " x:" << die.instances[i]->posX << " y:" << die.instances[i]->posY << endl;
     // }
@@ -313,17 +248,15 @@ void SimulatedAnnealing::instMove(Die& die) {
 
 char SimulatedAnnealing::accept() {
     ////cout << "delta cost" << currentCost - previousCost << endl;
-    if (currentCost - previousCost <= 0 && currentCost - bestCost <= 0)
+    if (currentCost - previousCost <= 0)
         return 'a';
-    else if (currentCost - previousCost <= 0 && currentCost - bestCost > 0) {
-        return 'b';
-    } else {
-        double prob = exp(-(5 * (currentCost - previousCost) / (temperature)));
+    else {
+        double prob = exp(-(1000 * (currentCost - previousCost) / (temperature)));
         // //cout << "PROB " << prob << endl;
         if (prob >= 0.0184 && rand() < prob * RAND_MAX)
-            return 'c';
+            return 'b';
         else
-            return 'd';
+            return 'c';
     }
 }
 void SimulatedAnnealing::recover(Die& die) {
@@ -373,6 +306,9 @@ void SimulatedAnnealing::entireProcedure(Die& die, vector<vector<LibCell>>& lib)
         count++;
         temperature *= 0.99995;
         instMove(die);
+        if (cCount >= 1000) {
+            break;
+        }
         // cout << "grid: " << endl;
         // for (int j = 0; j < die.rowNum; j++) {
         //     for (int i = 0; i < die.colNum; i++) {

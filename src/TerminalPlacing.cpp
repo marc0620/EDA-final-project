@@ -272,7 +272,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
             end[i] = endx[i] = endy[i] = 1;
     }
-    double penalty = (double)50 / gridside;  //覺得太久就調這邊(把1調大)
+    double penalty = (double)10 / gridside;  //覺得太久就調這邊(把1調大)
 
     while (true) {
         int signal = 1;
