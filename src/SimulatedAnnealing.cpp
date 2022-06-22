@@ -101,8 +101,8 @@ void SimulatedAnnealing::randomLayer(Die& die, vector<vector<LibCell>>& lib) {
             if ((*needTerminal)[j]) {
                 Pin* t = new Pin();
                 t->net = j;
-                t->posX = (*terminals)[j].posX;
-                t->posY = (*terminals)[j].posY;
+                t->posX = (*terminals)[j].posX + Terminal::width / 2;
+                t->posY = (*terminals)[j].posY + Terminal::height / 2;
                 nets[j].pins.push_back(t);
             }
         }
@@ -277,8 +277,8 @@ void SimulatedAnnealing::recover(Die& die) {
         }
         sum = 0;
         for (int j = rowComponent.size() - 1; j >= 0; j--) {
-            rightmost.insert(rightmost.begin(), die.higherRightX - sum);
             sum += rowComponent[j]->sizeX;
+            rightmost.insert(rightmost.begin(), die.higherRightX - sum);
         }
         for (int j = 0; j < rowComponent.size(); j++) {
             rowComponent[j]->posX = (rowComponent[j]->posX < leftmost[j] ? leftmost[j] : rowComponent[j]->posX);

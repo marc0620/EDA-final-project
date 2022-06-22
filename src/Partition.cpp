@@ -94,8 +94,8 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Di
             D1area += Lib[die1->tech][instances[i].type].getarea();
         }
     }
-    cout<<"D0 used area = "<<D0area<<endl;
-    cout<<"D1 used area = "<<D1area<<endl;
+    cout << "D0 used area = " << D0area << endl;
+    cout << "D1 used area = " << D1area << endl;
     // showcurrentcost(instances);
     // showtwodie(D0inst,D1inst);
 
@@ -113,7 +113,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Di
     ///////
     // showcostreduction(instances);
     int count = 0;
-    int idealterminalnum = (int)((double)die0->area / ((double)Terminal::eqarea()) * (0.5));  //調參
+    int idealterminalnum = (int)((double)die0->area / ((double)Terminal::eqarea()) * (0.3));  //調參
     int idealtotalcost = idealterminalnum * 10 * 0.8;                                         //調參
     int currentcost = getcurrentcost(instances);
 

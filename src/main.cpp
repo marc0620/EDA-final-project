@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
     vector<int> netPinNum;
     vector<list<Inst*>> nets;
     int64_t avgWidth[2] = {0};
+    int terminalNum = 0;
     for (int i = 0; i < techNum; i++) {
         int tech;
         fin >> JUNK >> junk >> junk;
@@ -128,9 +129,29 @@ int main(int argc, char* argv[]) {
     Terminalplacement TP;
     TP.Terminal_Placing(&terminals, &needterminal, dies[0]->instances, &nets, &Lib, dies[0]);
 
-     mode = 'b';
+    mode = 'b';
     SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
     SAD1.entireProcedure((*dies[1]), Lib);
+
+    fout << "TopDiePlacement " << dies[0]->instNum << '\n';
+    for (int i = 0; i < dies[0]->instNum; i++) {
+        fout << "Inst C" << dies[0]->instances[i]->name + 1 << ' ' << dies[0]->instances[i]->posX << ' ' << dies[0]->instances[i]->posY << '\n';
+    }
+    fout << "BottomDiePlacement " << dies[1]->instNum << '\n';
+    for (int i = 0; i < dies[1]->instNum; i++) {
+        fout << "Inst C" << dies[1]->instances[i]->name + 1 << ' ' << dies[1]->instances[i]->posX << ' ' << dies[1]->instances[i]->posY << '\n';
+    }
+    for (int i = 0; i < needterminal.size(); i++) {
+        if (needterminal[i]) {
+            terminalNum += 1;
+        }
+    }
+    fout << "NumTerminals " << terminalNum << '\n';
+    for (int i = 0; i < terminals.size(); i++) {
+        if (needterminal[i]) {
+            fout << "Terminal N" << i + 1 << ' ' << terminals[i].posX + Terminal::width / 2 << ' ' << terminals[i].posY + Terminal::height / 2 << '\n';
+        }
+    }
 }
 
 //  remember to set die.instnum after gets the partition!!

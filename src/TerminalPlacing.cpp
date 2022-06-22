@@ -263,10 +263,10 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
             end[i] = endx[i] = endy[i] = 1;
     }
     double penalty = (double)1 / gridside;  //覺得太久就調這邊(把1調大)
-    int remainx = (die0->higherRightX-die0->lowerLeftX)-gridside*Terminal::eqwidth();
-    int remainy = (die0->higherRightY-die0->lowerLeftY)-gridside*Terminal::eqheight();
-    int stepx = 0.5*remainx/gridside;
-    int stepy = 0.5*remainy/gridside;
+    int remainx = (die0->higherRightX - die0->lowerLeftX) - gridside * Terminal::eqwidth();
+    int remainy = (die0->higherRightY - die0->lowerLeftY) - gridside * Terminal::eqheight();
+    int stepx = 0.5 * remainx / gridside;
+    int stepy = 0.5 * remainy / gridside;
     int count = 0;
     while (true) {
         int signal = 1;
@@ -305,22 +305,21 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
                     endy[i] = 1;
             }
         }
-        if(count % (int)(log(remainx/gridside)/log(2)) == (int)(log(remainx/gridside)/log(2)) - 1)
-        {
-            if(stepx > 1)
-            stepx /= 2;
-            if(stepy > 1)
-            stepy /= 2;
+        if (count % (int)(log(remainx / gridside) / log(2)) == (int)(log(remainx / gridside) / log(2)) - 1) {
+            if (stepx > 1)
+                stepx /= 2;
+            if (stepy > 1)
+                stepy /= 2;
         }
 
         count++;
     }
 
-    for (int i = 0; i < (*nets).size(); i++) {
-        if ((*needterminal)[i]) {
-            cout << "terminal for net " << i + 1 << " is placed at (" << (*terminals)[i].posX << "," << (*terminals)[i].posY << ")" << endl;
-        }
-    }
+    // for (int i = 0; i < (*nets).size(); i++) {
+    //     if ((*needterminal)[i]) {
+    //         cout << "terminal for net " << i + 1 << " is placed at (" << (*terminals)[i].posX << "," << (*terminals)[i].posY << ")" << endl;
+    //     }
+    // }
     for (int i = 0; i < (*nets).size(); i++) {
         if ((*needterminal)[i])
             if (overlap(i, (*terminals)[i].posX, (*terminals)[i].posY, terminals, needterminal, die0))
