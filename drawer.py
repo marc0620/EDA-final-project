@@ -55,6 +55,3 @@ for i in range(int(line.split()[0])):
 
 cv.resizeWindow('term', WW, WH)
 cv.imwrite('term.jpg', term, [cv.IMWRITE_JPEG_QUALITY, 90])
-cv.waitKey(0)
-cv.destroyAllWindows()
-cv.waitKey(1)
