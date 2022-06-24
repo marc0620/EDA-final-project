@@ -262,7 +262,7 @@ void Terminalplacement::Terminal_Placing(vector<Terminal>* terminals, vector<boo
         else
             end[i] = endx[i] = endy[i] = 1;
     }
-    double penalty = (double)1 / gridside;  //覺得太久就調這邊(把1調大)
+    double penalty = (double)5 / gridside;  //覺得太久就調這邊(把1調大)
     int remainx = (die0->higherRightX - die0->lowerLeftX) - gridside * Terminal::eqwidth();
     int remainy = (die0->higherRightY - die0->lowerLeftY) - gridside * Terminal::eqheight();
     int stepx = 0.5 * remainx / gridside;

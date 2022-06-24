@@ -8,12 +8,14 @@ using namespace std;
 void SimulatedAnnealing::pinsLookUp(Inst* a, LibCell& b) {
     if (a->type == b.gettype()) {
         // cout << a->pins.size() << " " << b.getpinNum() << endl;
+        a->sizeX = b.getsizeX();
+        a->sizeY = b.getsizeY();
         for (int i = 0; i < b.getpinNum(); i++) {
             a->pins[i].relativePosX = (*b.pins)[i].relativePosX;
             a->pins[i].relativePosY = (*b.pins)[i].relativePosY;
             // cout << "relative pin" << (*b.pins)[i].relativePosX << " " << (*b.pins)[i].relativePosY << endl;
             a->pins[i].name = (*b.pins)[i].name;
-            a->sizeX = b.getsizeX();
+
             // cout << a->pins[i].name << " ";
         }
     } else {

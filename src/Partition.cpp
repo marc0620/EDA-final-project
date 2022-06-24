@@ -113,7 +113,7 @@ void Partition(vector<Inst>* insts, vector<vector<LibCell> >& Lib, Die* die0, Di
     ///////
     // showcostreduction(instances);
     int count = 0;
-    int idealterminalnum = (int)((double)die0->area / ((double)Terminal::eqarea()) * (0.3));  //調參
+    int idealterminalnum = (int)((double)die0->area / ((double)Terminal::eqarea()) * (0.5));  //調參
     int idealtotalcost = idealterminalnum * 10 * 0.8;                                         //調參
     int currentcost = getcurrentcost(instances);
 

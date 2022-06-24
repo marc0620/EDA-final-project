@@ -132,26 +132,36 @@ int main(int argc, char* argv[]) {
     mode = 'b';
     SimulatedAnnealing SAD1(netNum, mode, &terminals, &needterminal);
     SAD1.entireProcedure((*dies[1]), Lib);
-
+    fstream fout2;
+    fout2.open(argv[3], ios::out);
+    fout2 << dies[0]->higherRightX << " " << dies[1]->higherRightY << '\n';
     fout << "TopDiePlacement " << dies[0]->instNum << '\n';
+    fout2 << dies[0]->instNum << '\n';
     for (int i = 0; i < dies[0]->instNum; i++) {
         fout << "Inst C" << dies[0]->instances[i]->name + 1 << ' ' << dies[0]->instances[i]->posX << ' ' << dies[0]->instances[i]->posY << '\n';
+        fout2 << dies[0]->instances[i]->posX << ' ' << dies[0]->instances[i]->posY << " " << dies[0]->instances[i]->sizeX << " " << dies[0]->instances[i]->sizeY << '\n';
     }
     fout << "BottomDiePlacement " << dies[1]->instNum << '\n';
+    fout2 << dies[1]->instNum << '\n';
     for (int i = 0; i < dies[1]->instNum; i++) {
         fout << "Inst C" << dies[1]->instances[i]->name + 1 << ' ' << dies[1]->instances[i]->posX << ' ' << dies[1]->instances[i]->posY << '\n';
+        fout2 << dies[1]->instances[i]->posX << ' ' << dies[1]->instances[i]->posY << " " << dies[1]->instances[i]->sizeX << " " << dies[1]->instances[i]->sizeY << '\n';
     }
     for (int i = 0; i < needterminal.size(); i++) {
         if (needterminal[i]) {
             terminalNum += 1;
         }
     }
+    fout2 << Terminal::width << " " << Terminal::height << '\n';
     fout << "NumTerminals " << terminalNum << '\n';
+    fout2 << terminalNum << '\n';
     for (int i = 0; i < terminals.size(); i++) {
         if (needterminal[i]) {
             fout << "Terminal N" << i + 1 << ' ' << terminals[i].posX + Terminal::width / 2 << ' ' << terminals[i].posY + Terminal::height / 2 << '\n';
+            fout2 << terminals[i].posX + Terminal::width / 2 << ' ' << terminals[i].posY + Terminal::height / 2 << '\n';
         }
     }
+    fout.close();
 }
 
 //  remember to set die.instnum after gets the partition!!
