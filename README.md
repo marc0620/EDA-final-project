@@ -15,10 +15,10 @@ HOW TO COMPILE:
 
 HOW TO RUN:
 
-	./bin/main input/<input file name> output/<output file name>
+	./bin/main input/<input file name> ./output/<output file name> ./DrawingOutput/<output file name>
 	For example,
 	under EDA-final-project
-	./bin/main input/input1.txt output/output1.txt
+	./bin/main input/input1.txt output/output1.txt ./DrawingOutput/output1.txt 
 
 HOW TO EVALUATE THE RESULT:
 
@@ -26,3 +26,6 @@ HOW TO EVALUATE THE RESULT:
   	For example,
 	under EDA-final-project
 	./evaluator input/input1.txt output/output1.txt
+	
+HOW TO GENERATE PLOT OF PLACING RESULT
+	python drawer.py ./DrawingOutput/<target outfile for drawing>
