@@ -10,7 +10,7 @@ obj/ objects binary
 output/ output file
 src/ source C++ codes
 
-//the test cases are files in ./inputs
+the test cases are files in ./inputs
 
 HOW TO COMPILE:
 
