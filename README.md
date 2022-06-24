@@ -28,4 +28,5 @@ HOW TO EVALUATE THE RESULT:
 	./evaluator input/input1.txt output/output1.txt
 	
 HOW TO GENERATE PLOT OF PLACING RESULT
+
 	python drawer.py ./DrawingOutput/<target outfile for drawing>
