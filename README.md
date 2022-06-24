@@ -11,8 +11,7 @@ src/ 	  	source C++ codes
 ======
 HOW TO COMPILE:
 
-Then compile the demo, simply follow the following steps
-  make
+  	make
 ======
 HOW TO RUN:
 
