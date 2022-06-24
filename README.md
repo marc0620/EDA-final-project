@@ -25,4 +25,4 @@ HOW TO EVALUATE THE RESULT:
   	./evaluator input/<input file name> output/<output file name>
   	For example,
 	under EDA-final-project
-	./ input/input1.txt output/output1.txt
+	./evaluator input/input1.txt output/output1.txt
