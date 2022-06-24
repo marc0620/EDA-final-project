@@ -1,10 +1,13 @@
 # EDA-final-project
-=====
 DIRECTORY:
 
-bin/	  executable binary
-doc/	  reports
-src/ 	  source C++ codes
+DrawingOutput/	output visualization
+bin/	  	executable binary
+input/		input file
+lib/		libraries
+obj/		objects binary
+output/		output file
+src/ 	  	source C++ codes
 ======
 HOW TO COMPILE:
 
